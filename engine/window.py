@@ -33,6 +33,8 @@ class Window:
     def swap_buffers(self):
         glfw.swap_buffers(self.window)
 
+    def get_framebuffer_size(self):
+        return glfw.get_framebuffer_size(self.window)
 
     def shutdown(self):
         glfw.destroy_window(self.window)
