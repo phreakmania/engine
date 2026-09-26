@@ -1,27 +1,43 @@
+import math
 from .player import Player
+from .enemy import Enemy
+from engine.vector2 import Vector2
 
 class Game:
     def __init__(self):
         self.player = Player()
+        self.enemy = Enemy(x=320,y=240)
 
     def update(self, dt, window):
-        direction_x = 0.0
-        direction_y = 0.0
+        
+        direction = Vector2()
 
         if window.is_key_pressed("d"):
-            direction_x += 1.0
+            direction.x += 1.0
 
         if window.is_key_pressed("a"):
-            direction_x -= 1.0
+            direction.x -= 1.0
 
         if window.is_key_pressed("w"):
-            direction_y -= 1.0
+            direction.y -= 1.0
 
         if window.is_key_pressed("s"):
-            direction_y += 1.0
+            direction.y += 1.0
+
+        direction = direction.normalized()
 
         self.player.move(
-            direction_x,
-            direction_y,
+            direction,
             dt,
+        )
+
+    def render(self, renderer):
+        renderer.render(
+            self.player.transform,
+            self.player.color
+        )
+
+        renderer.render(
+            self.enemy.transform,
+            self.enemy.color
         )
