@@ -6,6 +6,8 @@ class Application:
     def __init__(self, width=1280, height=720, title="New Game"):
         self.window = Window(width, height, title)
         self.renderer = Renderer()
+        self.player_x = 0.0
+        self.player_y = 0.0 
 
     def run(self: Application):
         last_time = glfw.get_time()
@@ -22,11 +24,26 @@ class Application:
 
         self.shutdown()
 
-    def update(self: Application, dt:float):
-        print(f"dt: {dt:.6f}")
+    def update(self, dt):
+        speed = 0.5
 
-    def render(self: Application):
-        self.renderer.render()
+        if self.window.is_key_pressed("d"):
+            self.player_x += speed * dt
+
+        if self.window.is_key_pressed("a"):
+            self.player_x -= speed * dt
+
+        if self.window.is_key_pressed("w"):
+            self.player_y += speed * dt
+
+        if self.window.is_key_pressed("s"):
+            self.player_y -= speed * dt
+
+    def render(self):
+        self.renderer.render(
+            self.player_x,
+            self.player_y,
+        )
 
     def shutdown(self: Application):
         self.renderer.shutdown()
