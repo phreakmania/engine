@@ -1,5 +1,5 @@
 import math
-from engine.transform import Transform
+from engine.ecs.components.transform import Transform
 from engine.vector2 import Vector2
 
 class Enemy:
