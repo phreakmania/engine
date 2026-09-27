@@ -1,6 +1,7 @@
 import math
 from engine.transform import Transform
 from engine.vector2 import Vector2
+from engine.collision import intersects
 
 class Player:
     def __init__(self, x=640.0, y=360.0, speed=200.0):
@@ -11,8 +12,60 @@ class Player:
         )
         self.color = (0.1,0.2,0.9,1.0)
         self.speed = speed
+        self.health = 5
 
-    def move(self, direction: Vector2, dt):
+        self.invulnerability_duration = 0.5
+        self.invulnerability_remaining = 0.0
+        self.destroyed = False
 
-        self.transform.position.x += direction.x * self.speed * dt
-        self.transform.position.y += direction.y * self.speed * dt
+    def is_dead(self):
+        return self.health <= 0
+
+    def take_damage(self, damage):
+        if self.invulnerability_remaining > 0.0:
+            return
+
+        self.health -= damage
+
+        self.invulnerability_remaining = self.invulnerability_duration
+        if self.is_dead():
+            self.destroyed = True
+
+    def keep_inside(self, width, height):
+        half_width = self.transform.scale.x * 0.5
+        half_height = self.transform.scale.y * 0.5
+
+        self.transform.position.x = max(
+            half_width,
+            min(self.transform.position.x, width - half_width),
+        )
+
+        self.transform.position.y = max(
+            half_height,
+            min(self.transform.position.y, height - half_height),
+        )
+
+    def move(self, direction, dt, walls):
+        direction = direction.normalized()
+
+        movement = direction * self.speed * dt
+
+        # X
+        self.transform.position.x += movement.x
+
+        for wall in walls:
+            if intersects(self.transform, wall.transform):
+                self.transform.position.x -= movement.x
+                break
+
+        # Y
+        self.transform.position.y += movement.y
+
+        for wall in walls:
+            if intersects(self.transform, wall.transform):
+                self.transform.position.y -= movement.y
+                break
+
+    def update(self, dt):
+        if self.invulnerability_remaining > 0.0:
+            self.invulnerability_remaining -= dt
