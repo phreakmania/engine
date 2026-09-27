@@ -1,8 +1,6 @@
 import ctypes
 import numpy as np
 
-from .transform import Transform
-
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 
