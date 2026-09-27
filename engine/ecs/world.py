@@ -48,7 +48,7 @@ class World:
             store.pop(entity, None)
 
     def get_component(self, entity: Entity, component_type: type):
-        return self._components[component_type][entity]
+        return self._components.get(component_type, {}).get(entity)
 
     def query(self, *component_types):
         if not component_types:
