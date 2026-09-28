@@ -7,23 +7,52 @@ from engine.vector2 import Vector2
 from engine.key import Key
 from engine.texture import Texture
 from engine.collision import intersects
-from engine.scene import Scene
-from engine.ecs.systems.movement import movement_system
-from engine.ecs.systems.quad_render import quad_render_system
+from engine.scene_loader import SceneLoader
+from engine.ecs.component_registry import ComponentRegistry
 from engine.ecs.components.transform import Transform
 from engine.ecs.components.velocity import Velocity
+from engine.ecs.components.player_spawn import PlayerSpawn
 from engine.ecs.components.quad_renderable import QuadRenderable
+from engine.ecs.systems.movement import movement_system
+from engine.ecs.systems.quad_render import quad_render_system
 
 class Game:
     def __init__(self, width, height):
         self.game_over = False
-        self.width = width
-        self.height = height
+        self.viewport_width = width
+        self.viewport_height = height
 
         self.world_width = 2000.0
         self.world_height = 1000.0
 
-        self.scene = Scene()
+        registry = ComponentRegistry()
+
+        registry.register(
+            "WallTag",
+            lambda data: WallTag()
+        )
+
+        registry.register(
+            "EnemyTag",
+            lambda data: EnemyTag()
+        )
+
+        registry.register(
+            "Health",
+            lambda data: Health(
+                current=data["current"]
+            )
+        )
+
+        registry.register(
+            "Damage",
+            lambda data: Damage(
+                value=data["value"]
+            )
+        )
+
+        self.scene_loader = SceneLoader(registry)
+        self.scene = self.scene_loader.load("game/assets/scenes/test_scene.json")
         self.world = self.scene.world
         self.camera = Camera2D()
 
@@ -33,16 +62,6 @@ class Game:
         wall_size = 32.0
         half_wall = wall_size * 0.5
 
-        self._spawn_walls([
-            Transform(Vector2(self.world_width * 0.5, half_wall),
-                            Vector2(self.world_width, wall_size)),
-            Transform(Vector2(self.world_width * 0.5, self.world_height - half_wall),
-                            Vector2(self.world_width, wall_size)),
-            Transform(Vector2(half_wall, self.world_height * 0.5),
-                            Vector2(wall_size, self.world_height)),
-            Transform(Vector2(self.world_width - half_wall, self.world_height * 0.5),
-                            Vector2(wall_size, self.world_height)),
-        ])
         self._spawn_player()
 
     def update(self, dt, input):
@@ -79,8 +98,8 @@ class Game:
         player_position = self._get_player_position()
 
         self.camera.position = Vector2(
-            player_position.x - self.width * 0.5,
-            player_position.y - self.height * 0.5,
+            player_position.x - self.viewport_width * 0.5,
+            player_position.y - self.viewport_height * 0.5,
         )
 
     def _spawn_walls(self, transforms):
@@ -104,6 +123,14 @@ class Game:
             )
 
     def _spawn_player(self):
+
+        results = list(self.world.query(
+            Transform,
+            PlayerSpawn
+        ))
+
+        player_spawn_entity, player_spawn_transform, player_spawn = results[0]
+              
         entity = self.world.create_entity()
         self.world.add_component(
             entity,
@@ -112,10 +139,7 @@ class Game:
 
         self.world.add_component(
             entity,
-            Transform(
-                position=Vector2(640.0, 360.0),
-                scale=Vector2(32.0, 32.0),
-            ),
+            player_spawn_transform,
         )
 
         self.world.add_component(
@@ -151,7 +175,7 @@ class Game:
             self.world.add_component(
                 entity,
                 Transform(
-                    position=Vector2(self.width * 0.5, 80.0),
+                    position=Vector2(self.world_width * 0.5, 80.0),
                     scale=Vector2(64.0, 16.0),
                 ),
             )
