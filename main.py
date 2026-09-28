@@ -2,6 +2,8 @@ import glfw
 from engine.application import Application
 from game.game import Game
 
+from PIL import Image
+
 def main():
     GAME_WIDTH = 1280
     GAME_HEIGHT = 720
