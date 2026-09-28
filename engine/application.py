@@ -1,4 +1,8 @@
 import glfw
+
+from engine.vector2 import Vector2
+from engine.camera import Camera2D
+
 from .window import Window
 from .renderer import Renderer
 from .input import Input
@@ -8,6 +12,7 @@ class Application:
         self.window = Window(width, height, title)
         self.input = Input(self.window)
         self.renderer = Renderer(
+            game.camera,
             virtual_width=1280,
             virtual_height=720,
         )
