@@ -1,6 +1,12 @@
-from .components import BulletTag
+from .components import BulletTag, Invulnerability
 
 from engine.ecs.components.transform import Transform
+
+def invulnerability_system(world, dt):
+    for entity, invulnerability in world.query(Invulnerability):
+        if invulnerability.remaining > 0.0:
+            invulnerability.remaining = max(0.0, invulnerability.remaining - dt)
+
 
 def bullet_lifetime_system(world):
     to_destroy = []
