@@ -2,6 +2,7 @@
 from .components import PlayerTag, EnemyTag, BulletTag, WallTag, Damage, Health, Invulnerability
 from .systems import invulnerability_system, bullet_lifetime_system
 
+from engine.camera import Camera2D
 from engine.vector2 import Vector2
 from engine.key import Key
 from engine.collision import intersects
@@ -17,7 +18,12 @@ class Game:
         self.game_over = False
         self.width = width
         self.height = height
+
+        self.world_width = 3000.0
+        self.world_height = 2000.0
+
         self.world = World()
+        self.camera = Camera2D()
 
         self.enemy_spawn_interval = 2.0
         self.enemy_spawn_timer = 0.0
@@ -26,14 +32,14 @@ class Game:
         half_wall = wall_size * 0.5
 
         self._spawn_walls([
-            Transform(Vector2(width * 0.5, half_wall),
-                            Vector2(width, wall_size)),
-            Transform(Vector2(width * 0.5, height - half_wall),
-                            Vector2(width, wall_size)),
-            Transform(Vector2(half_wall, height * 0.5),
-                            Vector2(wall_size, height)),
-            Transform(Vector2(width - half_wall, height * 0.5),
-                            Vector2(wall_size, height)),
+            Transform(Vector2(self.world_width * 0.5, half_wall),
+                            Vector2(self.world_width, wall_size)),
+            Transform(Vector2(self.world_width * 0.5, self.world_height - half_wall),
+                            Vector2(self.world_width, wall_size)),
+            Transform(Vector2(half_wall, self.world_height * 0.5),
+                            Vector2(wall_size, self.world_height)),
+            Transform(Vector2(self.world_width - half_wall, self.world_height * 0.5),
+                            Vector2(wall_size, self.world_height)),
         ])
         self._spawn_player()
 
@@ -52,6 +58,8 @@ class Game:
             dt,
         )
 
+        self._update_camera(dt)
+
         self._handle_bullet_enemy_collisions()
         self._handle_enemy_player_collisions()
 
@@ -63,6 +71,14 @@ class Game:
         )
         bullet_lifetime_system(
             self.world
+        )
+
+    def _update_camera(self, dt):
+        player_position = self._get_player_position()
+
+        self.camera.position = Vector2(
+            player_position.x - self.width * 0.5,
+            player_position.y - self.height * 0.5,
         )
 
     def _spawn_walls(self, transforms):

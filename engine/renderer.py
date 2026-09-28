@@ -1,11 +1,14 @@
 import ctypes
 import numpy as np
 
+from engine.camera import Camera2D
+
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 
 class Renderer:
-    def __init__(self, virtual_width=1280, virtual_height=720):
+    def __init__(self, camera: Camera2D, virtual_width=1280, virtual_height=720):
+        self.camera = camera
         self.virtual_width = virtual_width
         self.virtual_height = virtual_height
 
@@ -177,10 +180,14 @@ class Renderer:
         glUseProgram(self.shader)
         glBindVertexArray(self.vao)
 
+        screen_position = self.camera.world_to_screen(
+            transform.position
+        )
+
         glUniform2f(
             self.offset_location,
-            transform.position.x,
-            transform.position.y,
+            screen_position.x,
+            screen_position.y,
         )
 
         glUniform2f(
