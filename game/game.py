@@ -7,7 +7,7 @@ from engine.vector2 import Vector2
 from engine.key import Key
 from engine.texture import Texture
 from engine.collision import intersects
-from engine.ecs.world import World
+from engine.scene import Scene
 from engine.ecs.systems.movement import movement_system
 from engine.ecs.systems.quad_render import quad_render_system
 from engine.ecs.components.transform import Transform
@@ -19,11 +19,12 @@ class Game:
         self.game_over = False
         self.width = width
         self.height = height
-        
-        self.world_width = 3000.0
-        self.world_height = 2000.0
 
-        self.world = World()
+        self.world_width = 2000.0
+        self.world_height = 1000.0
+
+        self.scene = Scene()
+        self.world = self.scene.world
         self.camera = Camera2D()
 
         self.enemy_spawn_interval = 2.0
