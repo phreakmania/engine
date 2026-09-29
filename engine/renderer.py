@@ -1,5 +1,8 @@
 import ctypes
 import numpy as np
+
+from .transform import Transform
+
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 
@@ -12,12 +15,29 @@ class Renderer:
         #version 330 core
 
         layout (location = 0) in vec2 position;
+
         uniform vec2 offset;
+        uniform vec2 size;
+        uniform float rotation;
         uniform mat4 projection;
 
         void main()
         {
-            gl_Position = projection * vec4(position + offset, 0.0, 1.0);
+            vec2 scaled_position = position * size;
+
+            float c = cos(rotation);
+            float s = sin(rotation);
+
+            vec2 rotated_position = vec2(
+                scaled_position.x * c - scaled_position.y * s,
+                scaled_position.x * s + scaled_position.y * c
+            );
+
+            gl_Position = projection * vec4(
+                rotated_position + offset,
+                0.0,
+                1.0
+            );
         }
         """
 
@@ -25,20 +45,21 @@ class Renderer:
         #version 330 core
 
         out vec4 fragment_color;
+        uniform vec4 color;
 
         void main()
         {
-            fragment_color = vec4(0.2, 0.8, 0.7, 1.0);
+            fragment_color = color;
         }
         """
 
         glClearColor(0.1,0.15,0.2,1.0)
 
         vertices = np.array([
-            -16.0, -16.0,   # oben links
-            16.0, -16.0,   # oben rechts
-            16.0,  16.0,   # unten rechts
-            -16.0,  16.0,   # unten links
+            -0.5, -0.5,
+            0.5, -0.5,
+            0.5,  0.5,
+            -0.5,  0.5,
         ], dtype=np.float32)
 
         indices = np.array([
@@ -90,9 +111,24 @@ class Renderer:
             "offset",
         )
 
+        self.size_location = glGetUniformLocation(
+            self.shader,
+            "size",
+        )
+
+        self.rotation_location = glGetUniformLocation(
+            self.shader,
+            "rotation",
+        )
+
         self.projection_location = glGetUniformLocation(
             self.shader,
             "projection",
+        )
+
+        self.color_location = glGetUniformLocation(
+            self.shader,
+            "color",
         )
 
         projection = np.array([
@@ -136,15 +172,36 @@ class Renderer:
             viewport_height,
         )
 
-    def render(self, x, y):
+    def begin_frame(self):
         glClear(GL_COLOR_BUFFER_BIT)
+
+    def render(self, transform, color):
         glUseProgram(self.shader)
         glBindVertexArray(self.vao)
 
         glUniform2f(
             self.offset_location,
-            x,
-            y,
+            transform.position.x,
+            transform.position.y,
+        )
+
+        glUniform2f(
+            self.size_location,
+            transform.scale.x,
+            transform.scale.y,
+        )
+
+        glUniform1f(
+            self.rotation_location,
+            transform.rotation
+        )
+
+        glUniform4f(
+            self.color_location,
+            color[0],
+            color[1],
+            color[2],
+            color[3]
         )
 
         glDrawElements(
@@ -153,6 +210,7 @@ class Renderer:
             GL_UNSIGNED_INT,
             None,
         )
+
     def shutdown(self):
         glDeleteBuffers(1, [self.vbo])
         glDeleteBuffers(1, [self.ebo])

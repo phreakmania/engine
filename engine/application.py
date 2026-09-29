@@ -26,6 +26,7 @@ class Application:
             framebuffer_width, framebuffer_height = self.window.get_framebuffer_size()
             self.renderer.resize(framebuffer_width, framebuffer_height)
 
+            self.renderer.begin_frame()
             self.render()
             self.window.swap_buffers()
 
@@ -35,10 +36,7 @@ class Application:
         self.game.update(dt, self.window)
 
     def render(self):
-        self.renderer.render(
-            self.game.player.x,
-            self.game.player.y,
-        )
+        self.game.render(self.renderer)
 
     def shutdown(self: Application):
         self.renderer.shutdown()

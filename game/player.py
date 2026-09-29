@@ -1,21 +1,18 @@
 import math
-
+from engine.transform import Transform
+from engine.vector2 import Vector2
 
 class Player:
     def __init__(self, x=640.0, y=360.0, speed=200.0):
-        self.x = x
-        self.y = y
+
+        self.transform = Transform(
+            position=Vector2(x,y),
+            scale=Vector2(32.0, 32.0),
+        )
+        self.color = (0.1,0.2,0.9,1.0)
         self.speed = speed
 
-    def move(self, direction_x, direction_y, dt):
-        length = math.sqrt(
-            direction_x * direction_x +
-            direction_y * direction_y
-        )
+    def move(self, direction: Vector2, dt):
 
-        if length > 0:
-            direction_x /= length
-            direction_y /= length
-
-        self.x += direction_x * self.speed * dt
-        self.y += direction_y * self.speed * dt
+        self.transform.position.x += direction.x * self.speed * dt
+        self.transform.position.y += direction.y * self.speed * dt
