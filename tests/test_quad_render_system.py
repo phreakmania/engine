@@ -8,6 +8,19 @@ from engine.ecs.components.quad_renderable import QuadRenderable
 
 
 class QuadRenderSystemTests(unittest.TestCase):
+    def test_renders_without_requesting_optional_texture(self):
+        transform = Transform(position=Vector2(10.0, 20.0))
+        renderable = QuadRenderable(color=(1.0, 1.0, 1.0, 1.0))
+        world = Mock()
+        world.query.return_value = [(1, transform, renderable)]
+        renderer = Mock()
+        resources = Mock()
+
+        quad_render_system(world, renderer, resources)
+
+        resources.get_texture.assert_not_called()
+        renderer.render.assert_called_once_with(transform, renderable.color, None)
+
     def test_resolves_texture_before_rendering(self):
         transform = Transform(
             position=Vector2(10.0, 20.0)
