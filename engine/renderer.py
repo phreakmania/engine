@@ -4,16 +4,20 @@ from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 
 class Renderer:
-    def __init__(self):
+    def __init__(self, virtual_width=1280, virtual_height=720):
+        self.virtual_width = virtual_width
+        self.virtual_height = virtual_height
+
         vertex_shader_source = """
         #version 330 core
 
         layout (location = 0) in vec2 position;
         uniform vec2 offset;
+        uniform mat4 projection;
 
         void main()
         {
-            gl_Position = vec4(position + offset, 0.0, 1.0);
+            gl_Position = projection * vec4(position + offset, 0.0, 1.0);
         }
         """
 
@@ -31,10 +35,10 @@ class Renderer:
         glClearColor(0.1,0.15,0.2,1.0)
 
         vertices = np.array([
-            -0.5,  0.5,   # 0: oben links
-            0.5,  0.5,   # 1: oben rechts
-            0.5, -0.5,   # 2: unten rechts
-            -0.5, -0.5,   # 3: unten links
+            -16.0, -16.0,   # oben links
+            16.0, -16.0,   # oben rechts
+            16.0,  16.0,   # unten rechts
+            -16.0,  16.0,   # unten links
         ], dtype=np.float32)
 
         indices = np.array([
@@ -84,6 +88,52 @@ class Renderer:
         self.offset_location = glGetUniformLocation(
             self.shader,
             "offset",
+        )
+
+        self.projection_location = glGetUniformLocation(
+            self.shader,
+            "projection",
+        )
+
+        projection = np.array([
+            [2.0 / virtual_width,    0.0,                   0.0, -1.0],
+            [0.0,                   -2.0 / virtual_height,  0.0,  1.0],
+            [0.0,                    0.0,                   1.0,  0.0],
+            [0.0,                    0.0,                   0.0,  1.0],
+        ], dtype=np.float32)
+
+        glUseProgram(self.shader)
+
+        glUniformMatrix4fv(
+            self.projection_location,
+            1,
+            GL_TRUE,
+            projection,
+        )
+
+
+    def resize(self, framebuffer_width, framebuffer_height):
+        target_aspect = self.virtual_width / self.virtual_height
+        window_aspect = framebuffer_width / framebuffer_height
+
+        if window_aspect > target_aspect:
+            viewport_height = framebuffer_height
+            viewport_width = int(viewport_height * target_aspect)
+
+            viewport_x = (framebuffer_width - viewport_width) // 2
+            viewport_y = 0
+        else:
+            viewport_width = framebuffer_width
+            viewport_height = int(viewport_width / target_aspect)
+
+            viewport_x = 0
+            viewport_y = (framebuffer_height - viewport_height) // 2
+
+        glViewport(
+            viewport_x,
+            viewport_y,
+            viewport_width,
+            viewport_height,
         )
 
     def render(self, x, y):
