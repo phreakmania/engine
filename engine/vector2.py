@@ -19,10 +19,10 @@ class Vector2:
 
         return self / length
 
-    def __add__(self, other: Vector2):
+    def __add__(self, other):
         return Vector2(self.x + other.x, self.y + other.y)
 
-    def __sub__(self, other: Vector2):
+    def __sub__(self, other):
         return Vector2(self.x - other.x, self.y - other.y)
 
     def __mul__(self, scalar):
