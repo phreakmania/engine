@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from engine.timer import Timer
 
 @dataclass
 class BulletTag:
@@ -26,5 +27,4 @@ class Health:
 
 @dataclass
 class Invulnerability:
-    duration: float
-    remaining: float = 0.0
+    timer: Timer

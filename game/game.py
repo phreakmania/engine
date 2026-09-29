@@ -6,6 +6,7 @@ from engine.camera import Camera2D
 from engine.vector2 import Vector2
 from engine.key import Key
 from engine.texture import Texture
+from engine.timer import Timer
 from engine.collision import intersects
 from engine.scene_loader import SceneLoader
 from engine.ecs.component_registry import ComponentRegistry
@@ -43,7 +44,7 @@ class Game:
                 current=data["current"]
             )
         )
-
+ 
         registry.register(
             "Damage",
             lambda data: Damage(
@@ -56,8 +57,7 @@ class Game:
         self.world = self.scene.world
         self.camera = Camera2D()
 
-        self.enemy_spawn_interval = 2.0
-        self.enemy_spawn_timer = 0.0
+        self.enemy_spawn_timer = Timer(2.0, can_overflow=True)
 
         wall_size = 32.0
         half_wall = wall_size * 0.5
@@ -70,7 +70,6 @@ class Game:
 
         self._update_player(dt, input)
         self._spawn_bullets(input)
-        self._spawn_enemies(dt)
 
         self._update_enemies()
 
@@ -86,13 +85,11 @@ class Game:
 
         self._check_game_over()
 
-        invulnerability_system(
-            self.world,
-            dt
-        )
         bullet_lifetime_system(
             self.world
         )
+        self._update_timers(dt)
+        self._spawn_enemies(dt)
 
     def _update_camera(self, dt):
         player_position = self._get_player_position()
@@ -149,7 +146,10 @@ class Game:
 
         self.world.add_component(
             entity,
-            Invulnerability(0.5)
+            Invulnerability(Timer(
+                duration=0.5,
+                remaining=0.0
+            ))
         )
 
         self.world.add_component(
@@ -160,10 +160,10 @@ class Game:
         )
 
     def _spawn_enemies(self, dt):
-        self.enemy_spawn_timer += dt
+        self.enemy_spawn_timer.update(dt)
 
-        if self.enemy_spawn_timer >= self.enemy_spawn_interval:
-            self.enemy_spawn_timer -= self.enemy_spawn_interval
+        if self.enemy_spawn_timer.remaining == 0.0:
+            self.enemy_spawn_timer.restart()
 
             entity = self.world.create_entity()
 
@@ -260,7 +260,7 @@ class Game:
             Health,
             Invulnerability,
         ):
-            if invulnerability.remaining > 0.0:
+            if invulnerability.timer.remaining > 0.0:
                 return
 
                 
@@ -271,7 +271,7 @@ class Game:
             ):
                 if intersects(transform, player_transform):
                     health.current -= damage.value
-                    invulnerability.remaining = invulnerability.duration
+                    invulnerability.timer.restart()
                     break
 
     def _check_game_over(self):
@@ -295,8 +295,11 @@ class Game:
 
         if input.is_key_down(Key.S):
             direction.y += 1.0
-
         self._move_player(direction, dt)
+        
+    def _update_timers(self, dt):
+        for _, invulnerability in self.world.query(Invulnerability):
+            invulnerability.timer.update(dt)
 
     def _move_player(self, direction, dt):
         transform = self._get_player_transform()
