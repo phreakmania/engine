@@ -1,24 +1,15 @@
 import unittest
 from contextlib import ExitStack
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, call, patch
+
+from PIL import Image
 
 from engine.camera import Camera2D
 from engine.ecs.components.transform import Transform
 from engine.renderer import Renderer
 from engine.texture import Texture
+from engine import texture as texture_module
 from engine.vector2 import Vector2
-
-
-class FakeImage:
-    width = 2
-    height = 3
-
-    def convert(self, mode):
-        self.converted_mode = mode
-        return self
-
-    def tobytes(self):
-        return b"pixels"
 
 
 class TextureTests(unittest.TestCase):
@@ -31,17 +22,76 @@ class TextureTests(unittest.TestCase):
     def test_loads_image_and_uploads_rgba_texture(
         self, open_image, gen_texture, bind, tex_parameter, tex_image, delete_texture
     ):
-        image = FakeImage()
+        image = Image.new("RGBA", (2, 1))
+        image.putdata(((255, 0, 0, 255), (0, 255, 0, 64)))
         open_image.return_value = image
+        gl = Mock()
+        gl.attach_mock(gen_texture, "generate")
+        gl.attach_mock(bind, "bind")
+        gl.attach_mock(tex_parameter, "parameter")
+        gl.attach_mock(tex_image, "upload")
+        gl.attach_mock(delete_texture, "delete")
 
         texture = Texture("image.png")
-
-        self.assertEqual((texture.width, texture.height, texture.id), (2, 3, 42))
-        open_image.assert_called_once_with("image.png")
-        self.assertEqual(image.converted_mode, "RGBA")
-        tex_image.assert_called_once()
-
         texture.shutdown()
+
+        self.assertEqual((texture.width, texture.height, texture.id), (2, 1, 42))
+        open_image.assert_called_once_with("image.png")
+        self.assertEqual(gl.mock_calls, [
+            call.generate(1),
+            call.bind(texture_module.GL_TEXTURE_2D, 42),
+            call.parameter(
+                texture_module.GL_TEXTURE_2D,
+                texture_module.GL_TEXTURE_MIN_FILTER,
+                texture_module.GL_NEAREST,
+            ),
+            call.parameter(
+                texture_module.GL_TEXTURE_2D,
+                texture_module.GL_TEXTURE_MAG_FILTER,
+                texture_module.GL_NEAREST,
+            ),
+            call.upload(
+                texture_module.GL_TEXTURE_2D,
+                0,
+                texture_module.GL_RGBA,
+                2,
+                1,
+                0,
+                texture_module.GL_RGBA,
+                texture_module.GL_UNSIGNED_BYTE,
+                bytes((255, 0, 0, 255, 0, 255, 0, 64)),
+            ),
+            call.delete(1, [42]),
+        ])
+
+    @patch("engine.texture.glTexImage2D")
+    @patch("engine.texture.glTexParameteri")
+    @patch("engine.texture.glBindTexture")
+    @patch("engine.texture.glGenTextures", return_value=7)
+    @patch("engine.texture.Image.open")
+    def test_rgb_image_gets_opaque_alpha_channel(
+        self, open_image, gen_texture, bind, tex_parameter, tex_image
+    ):
+        open_image.return_value = Image.new("RGB", (1, 1), (10, 20, 30))
+
+        Texture("rgb.png")
+
+        self.assertEqual(tex_image.call_args.args[-1], bytes((10, 20, 30, 255)))
+
+    @patch("engine.texture.glTexImage2D", side_effect=RuntimeError("GPU upload failed"))
+    @patch("engine.texture.glTexParameteri")
+    @patch("engine.texture.glBindTexture")
+    @patch("engine.texture.glGenTextures", return_value=7)
+    @patch("engine.texture.Image.open")
+    def test_gpu_upload_error_is_propagated(
+        self, open_image, gen_texture, bind, tex_parameter, tex_image
+    ):
+        open_image.return_value = Image.new("RGBA", (1, 1))
+
+        with self.assertRaisesRegex(RuntimeError, "GPU upload failed"):
+            Texture("image.png")
+
+        tex_image.assert_called_once()
 
     @patch("engine.texture.Image.open", side_effect=OSError("missing"))
     def test_image_loading_errors_are_propagated(self, open_image):

@@ -24,6 +24,20 @@ class ResourceManagerTests(unittest.TestCase):
             self.assertIsNot(first, second)
             self.assertEqual(texture_class.call_count, 2)
 
+    def test_failed_texture_load_can_be_retried(self):
+        resources = ResourceManager()
+        recovered_texture = object()
+
+        with patch("engine.resource_manager.Texture") as texture_class:
+            texture_class.side_effect = [OSError("missing"), recovered_texture]
+
+            with self.assertRaisesRegex(OSError, "missing"):
+                resources.get_texture("image.png")
+
+            self.assertIs(resources.get_texture("image.png"), recovered_texture)
+            self.assertIs(resources.get_texture("image.png"), recovered_texture)
+            self.assertEqual(texture_class.call_count, 2)
+
 
 if __name__ == "__main__":
     unittest.main()

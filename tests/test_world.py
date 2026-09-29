@@ -21,8 +21,11 @@ class WorldTests(unittest.TestCase):
 
         first = world.create_entity()
         second = world.create_entity()
+        third = world.create_entity()
 
         self.assertNotEqual(first, second)
+        self.assertGreater(second, first)
+        self.assertLess(second, third)
 
     def test_add_and_get_component(self):
         world = World()
