@@ -18,7 +18,7 @@ class SceneLoaderTests(unittest.TestCase):
         scene = SceneLoader(registry).load("tests/assets/test_scene.json")
         results = list(scene.world.query(Transform))
 
-        self.assertEqual(len(results), 1)
+        self.assertEqual(len(results), 2)
 
         entity, transform = results[0]
 
@@ -33,12 +33,23 @@ class SceneLoaderTests(unittest.TestCase):
         scene = SceneLoader(registry).load("tests/assets/test_scene.json")
         results = list(scene.world.query(QuadRenderable))
 
-        self.assertEqual(len(results), 1)
+        self.assertEqual(len(results), 2)
 
         entity, renderable = results[0]
 
         self.assertEqual(renderable.color, tuple([1.0, 0.0, 0.0, 1.0]))
         self.assertEqual(renderable.texture, "assets/tile_0000.png")
+
+    def test_loads_scene_has_zindex_0(self):
+        registry = ComponentRegistry()
+        scene = SceneLoader(registry).load("tests/assets/test_scene.json")
+        results = list(scene.world.query(QuadRenderable))
+
+        self.assertEqual(len(results), 2)
+
+        entity, renderable = results[1]
+        self.assertEqual(renderable.z_index, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

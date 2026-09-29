@@ -5,3 +5,4 @@ from engine.texture import Texture
 class QuadRenderable:
     color: tuple[float, float, float, float]
     texture: str | None = None
+    z_index: int = 0

@@ -1,13 +1,41 @@
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 from engine.vector2 import Vector2
+from engine.ecs.world import World
 from engine.ecs.systems.quad_render import quad_render_system
 from engine.ecs.components.transform import Transform
 from engine.ecs.components.quad_renderable import QuadRenderable
 
 
 class QuadRenderSystemTests(unittest.TestCase):
+    def test_renders_lower_z_index_before_higher_z_index(self):
+        world = World()
+        high_entity = world.create_entity()
+        low_entity = world.create_entity()
+        high_transform = Transform(position=Vector2(20.0, 20.0))
+        low_transform = Transform(position=Vector2(10.0, 10.0))
+        high_renderable = QuadRenderable(
+            color=(1.0, 0.0, 0.0, 1.0),
+            z_index=5,
+        )
+        low_renderable = QuadRenderable(
+            color=(0.0, 1.0, 0.0, 1.0),
+            z_index=-2,
+        )
+        world.add_component(high_entity, high_transform)
+        world.add_component(high_entity, high_renderable)
+        world.add_component(low_entity, low_transform)
+        world.add_component(low_entity, low_renderable)
+        renderer = Mock()
+
+        quad_render_system(world, renderer, Mock())
+
+        self.assertEqual(renderer.render.call_args_list, [
+            call(low_transform, low_renderable.color, None),
+            call(high_transform, high_renderable.color, None),
+        ])
+
     def test_renders_without_requesting_optional_texture(self):
         transform = Transform(position=Vector2(10.0, 20.0))
         renderable = QuadRenderable(color=(1.0, 1.0, 1.0, 1.0))

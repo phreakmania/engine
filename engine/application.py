@@ -1,6 +1,5 @@
 import glfw
 
-from engine.texture import Texture
 
 from .window import Window
 from .resource_manager import ResourceManager
