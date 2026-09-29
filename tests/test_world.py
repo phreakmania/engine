@@ -1,7 +1,9 @@
 import unittest
 from dataclasses import dataclass
 
+from engine.ecs.hierarchy import destroy_entity_tree
 from engine.ecs.world import World
+from engine.ecs.components.parent import Parent
 
 
 @dataclass
@@ -103,6 +105,37 @@ class WorldTests(unittest.TestCase):
                 Position(10.0, 20.0),
             )
 
+    def test_destroying_parent_also_destroys_child(self):
+        world = World()
+
+        parent = world.create_entity()
+        child = world.create_entity()
+
+        world.add_component(
+            child,
+            Parent(parent),
+        )
+
+        destroy_entity_tree(world, parent)
+
+        self.assertFalse(world.is_alive(parent))
+        self.assertFalse(world.is_alive(child))
+
+    def test_destroy_entity_tree_destroys_descendants(self):
+        world = World()
+
+        parent = world.create_entity()
+        child = world.create_entity()
+        grandchild = world.create_entity()
+
+        world.add_component(child, Parent(parent))
+        world.add_component(grandchild, Parent(child))
+
+        destroy_entity_tree(world, parent)
+
+        self.assertFalse(world.is_alive(parent))
+        self.assertFalse(world.is_alive(child))
+        self.assertFalse(world.is_alive(grandchild))
 
 if __name__ == "__main__":
     unittest.main()

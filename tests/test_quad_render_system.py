@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import Mock, call
 
+from engine.ecs.components.parent import Parent
 from engine.vector2 import Vector2
 from engine.ecs.world import World
 from engine.ecs.systems.quad_render import quad_render_system
@@ -39,8 +40,11 @@ class QuadRenderSystemTests(unittest.TestCase):
     def test_renders_without_requesting_optional_texture(self):
         transform = Transform(position=Vector2(10.0, 20.0))
         renderable = QuadRenderable(color=(1.0, 1.0, 1.0, 1.0))
-        world = Mock()
-        world.query.return_value = [(1, transform, renderable)]
+        world = World()
+
+        entity = world.create_entity()
+        world.add_component(entity, transform)
+        world.add_component(entity, renderable)
         renderer = Mock()
         resources = Mock()
 
@@ -58,10 +62,11 @@ class QuadRenderSystemTests(unittest.TestCase):
             texture="assets/enemy.png",
         )
 
-        world = Mock()
-        world.query.return_value = [
-            (1, transform, renderable)
-        ]
+        world = World()
+
+        entity = world.create_entity()
+        world.add_component(entity, transform)
+        world.add_component(entity, renderable)
 
         renderer = Mock()
         resources = Mock()
@@ -81,6 +86,51 @@ class QuadRenderSystemTests(unittest.TestCase):
             texture,
         )
 
+    def test_renders_child_at_world_position_relative_to_parent(self):
+        world = World()
+
+        parent = world.create_entity()
+        world.add_component(
+            parent,
+            Transform(
+                position=Vector2(100.0, 50.0),
+            ),
+        )
+
+        child = world.create_entity()
+        local_transform = Transform(
+            position=Vector2(20.0, 10.0),
+            scale=Vector2(8.0, 8.0),
+        )
+        renderable = QuadRenderable(
+            color=(1.0, 1.0, 0.0, 1.0),
+        )
+
+        world.add_component(child, local_transform)
+        world.add_component(child, Parent(parent))
+        world.add_component(child, renderable)
+
+        renderer = Mock()
+        resources = Mock()
+
+        quad_render_system(
+            world,
+            renderer,
+            resources,
+        )
+
+        renderer.render.assert_called_once()
+
+        rendered_transform = renderer.render.call_args.args[0]
+
+        self.assertEqual(
+            rendered_transform.position,
+            Vector2(120.0, 60.0),
+        )
+        self.assertEqual(
+            rendered_transform.scale,
+            Vector2(8.0, 8.0),
+        )
 
 if __name__ == "__main__":
     unittest.main()

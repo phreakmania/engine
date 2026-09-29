@@ -9,6 +9,7 @@ from engine.texture import Texture
 from engine.timer import Timer
 from engine.collision import intersects
 from engine.scene_loader import SceneLoader
+from engine.ecs.hierarchy import destroy_entity_tree
 from engine.ecs.component_registry import ComponentRegistry
 from engine.ecs.components.parent import Parent
 from engine.ecs.components.transform import Transform
@@ -160,29 +161,6 @@ class Game:
             ),
         )
 
-        child = self.world.create_entity()
-
-        self.world.add_component(
-            child,
-            Transform(
-                position=Vector2(40.0, 0.0),
-                scale=Vector2(16.0, 16.0),
-            ),
-        )
-
-        self.world.add_component(
-            child,
-            Parent(entity),
-        )
-
-        self.world.add_component(
-            child,
-            QuadRenderable(
-                color=(1.0, 1.0, 0.0, 1.0),
-                z_index=10,
-            ),
-        )
-
     def _spawn_enemies(self, dt):
         self.enemy_spawn_timer.update(dt)
 
@@ -223,6 +201,29 @@ class Game:
             self.world.add_component(
                 entity,
                 Velocity(Vector2()),
+            )
+
+            child = self.world.create_entity()
+
+            self.world.add_component(
+                child,
+                Transform(
+                    position=Vector2(56.0, 16.0),
+                    scale=Vector2(16.0, 16.0),
+                ),
+            )
+
+            self.world.add_component(
+                child,
+                Parent(entity),
+            )
+
+            self.world.add_component(
+                child,
+                QuadRenderable(
+                    color=(1.0, 1.0, 0.0, 1.0),
+                    z_index=10,
+                ),
             )
 
     def _get_player_position(self):
@@ -269,7 +270,7 @@ class Game:
                     health.current -= damage.value
 
                     if health.current <= 0:
-                        self.world.destroy_entity(enemy_entity)
+                        destroy_entity_tree(self.world, enemy_entity)
 
                     bullets_to_destroy.append(bullet_entity)
                     break
