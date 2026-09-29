@@ -9,7 +9,21 @@
                 },
                 "QuadRenderable": {
                     "color": [1.0, 0.0, 0.0, 1.0],
-                    "texture": "assets/tile_0000.png"
+                    "texture": "assets/tile_0000.png",
+                    "z_index": 10
+                }
+            }
+        },
+        {
+            "components": {
+                "Transform": {
+                    "position": [400.0, 300.0],
+                    "scale": [64.0, 64.0],
+                    "rotation": 0.0
+                },
+                "QuadRenderable": {
+                    "color": [1.0, 0.0, 0.0, 1.0],
+                    "texture": "assets/tile_0001.png"
                 }
             }
         }
