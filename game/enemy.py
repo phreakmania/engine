@@ -8,7 +8,7 @@ class Enemy:
         self.transform = Transform(
             position=Vector2(x,y),
             scale=Vector2(64.0, 16.0),
-            rotation=math.radians(45.0)
+            rotation=0
         )
         self.color = (0.9,0.2,0.2,1.0)
         self.speed = speed

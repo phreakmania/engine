@@ -1,4 +1,3 @@
-import math 
 import glfw
 from .window import Window
 from .renderer import Renderer

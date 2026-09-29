@@ -1,4 +1,3 @@
-import math
 from engine.transform import Transform
 from engine.vector2 import Vector2
 from engine.collision import intersects
@@ -16,7 +15,6 @@ class Player:
 
         self.invulnerability_duration = 0.5
         self.invulnerability_remaining = 0.0
-        self.destroyed = False
 
     def is_dead(self):
         return self.health <= 0
@@ -28,22 +26,6 @@ class Player:
         self.health -= damage
 
         self.invulnerability_remaining = self.invulnerability_duration
-        if self.is_dead():
-            self.destroyed = True
-
-    def keep_inside(self, width, height):
-        half_width = self.transform.scale.x * 0.5
-        half_height = self.transform.scale.y * 0.5
-
-        self.transform.position.x = max(
-            half_width,
-            min(self.transform.position.x, width - half_width),
-        )
-
-        self.transform.position.y = max(
-            half_height,
-            min(self.transform.position.y, height - half_height),
-        )
 
     def move(self, direction, dt, walls):
         direction = direction.normalized()
