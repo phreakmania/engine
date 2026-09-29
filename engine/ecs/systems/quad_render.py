@@ -1,3 +1,4 @@
+from engine.ecs.transform_resolver import get_world_transform
 from engine.ecs.components.transform import Transform
 from engine.ecs.components.quad_renderable import QuadRenderable
 
@@ -15,8 +16,10 @@ def quad_render_system(world, renderer, resources):
         if renderable.texture is not None:
             texture = resources.get_texture(renderable.texture)
 
+        world_transform = get_world_transform(world, entity)
+
         renderer.render(
-            transform,
+            world_transform,
             renderable.color,
             texture,
         )
