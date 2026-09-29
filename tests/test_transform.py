@@ -1,7 +1,7 @@
 import unittest
 from dataclasses import dataclass
 
-from engine.ecs.transform import get_world_transform
+from engine.ecs.transform_resolver import get_world_transform
 from engine.ecs.world import World, Entity
 from engine.ecs.components.parent import Parent
 from engine.ecs.components.transform import Transform
