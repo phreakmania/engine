@@ -6,6 +6,7 @@ from engine.ecs.components.transform import Transform
 from engine.ecs.components.quad_renderable import QuadRenderable
 from engine.ecs.components.velocity import Velocity
 from engine.key import Key
+from engine.collision import intersects
 from engine.vector2 import Vector2
 from game.components import (
     BulletTag,
@@ -50,8 +51,8 @@ class GameTests(unittest.TestCase):
         self.assertIs(self.game.game_over, False)
         self.assertEqual((transform.position.x, transform.position.y), (640.0, 820.0))
         self.assertEqual(health.current, 5)
-        self.assertEqual(invulnerability.remaining, 0.0)
-        self.assertEqual(invulnerability.duration, 0.5)
+        self.assertEqual(invulnerability.timer.remaining, 0.0)
+        self.assertEqual(invulnerability.timer.duration, 0.5)
         self.assertEqual(len(self.enemies()), 1)
         self.assertEqual(len(list(self.game.world.query(WallTag))), 4)
 
@@ -85,7 +86,8 @@ class GameTests(unittest.TestCase):
     def test_enemy_spawns_only_after_interval_and_moves_toward_player(self):
         self.game.update(1.9, FakeInput())
         self.assertEqual(len(self.enemies()), 1)
-
+        self.game.update(0.1, FakeInput())
+        self.assertEqual(len(self.enemies()), 2)
         self.game.update(0.1, FakeInput())
         self.assertEqual(len(self.enemies()), 2)
 
@@ -160,19 +162,19 @@ class GameTests(unittest.TestCase):
     def test_spawn_timer_carries_remaining_time_to_next_spawn(self):
         initial_count = len(self.enemies())
 
-        self.game._spawn_enemies(1.25)
+        self.game.update(1.25, FakeInput())
         self.assertEqual(len(self.enemies()), initial_count)
-        self.game._spawn_enemies(1.0)
+        self.game.update(1.0, FakeInput())
         self.assertEqual(len(self.enemies()), initial_count + 1)
-        self.game._spawn_enemies(1.5)
+        self.game.update(1.5, FakeInput())
         self.assertEqual(len(self.enemies()), initial_count + 1)
-        self.game._spawn_enemies(0.25)
+        self.game.update(0.25, FakeInput())
         self.assertEqual(len(self.enemies()), initial_count + 2)
 
     def test_spawned_enemy_has_playable_components_and_follows_player(self):
         existing = {entity for entity, *_ in self.enemies()}
 
-        self.game._spawn_enemies(2.0)
+        self.game.update(2.0, FakeInput())
 
         entity, _, transform, health, damage = next(
             enemy for enemy in self.enemies() if enemy[0] not in existing
@@ -305,7 +307,7 @@ class GameTests(unittest.TestCase):
         self.game._handle_enemy_player_collisions()
 
         self.assertEqual(health.current, 3)
-        self.assertEqual(invulnerability.remaining, invulnerability.duration)
+        self.assertEqual(invulnerability.timer.remaining, invulnerability.timer.duration)
 
         self.game._handle_enemy_player_collisions()
         self.assertEqual(health.current, 3)
@@ -323,11 +325,11 @@ class GameTests(unittest.TestCase):
 
         self.game.update(0.1, FakeInput())
         self.assertEqual(health.current, 4)
-        self.assertAlmostEqual(invulnerability.remaining, 0.4)
+        self.assertAlmostEqual(invulnerability.timer.remaining, 0.4)
 
         self.game.update(0.4, FakeInput())
         self.assertEqual(health.current, 4)
-        self.assertEqual(invulnerability.remaining, 0.0)
+        self.assertEqual(invulnerability.timer.remaining, 0.0)
 
         self.game.update(0.1, FakeInput())
         self.assertEqual(health.current, 3)
