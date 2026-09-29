@@ -1,4 +1,4 @@
-from engine.transform import Transform
+from engine.ecs.components.transform import Transform
 from engine.vector2 import Vector2
 from engine.collision import intersects
 

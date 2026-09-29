@@ -1,12 +1,19 @@
 
 from .player import Player
 from .enemy import Enemy
-from .bullet import Bullet
 from .wall import Wall
+from .components import BulletTag, Damage
+from .bullet_lifetime_system import bullet_lifetime_system
 
 from engine.vector2 import Vector2
 from engine.key import Key
 from engine.collision import intersects
+from engine.ecs.world import World
+from engine.ecs.systems.movement import movement_system
+from engine.ecs.systems.quad_render import quad_render_system
+from engine.ecs.components.transform import Transform
+from engine.ecs.components.velocity import Velocity
+from engine.ecs.components.quad_renderable import QuadRenderable
 
 class Game:
     def __init__(self, width, height):
@@ -15,7 +22,7 @@ class Game:
         self.height = height
         self.player = Player()
         self.enemies = []
-        self.bullets = []
+        self.world = World()
 
         self.enemy_spawn_interval = 2.0
         self.enemy_spawn_timer = 0.0
@@ -63,7 +70,11 @@ class Game:
         self._spawn_bullets(input)
         self._spawn_enemies(dt)
 
-        self._update_bullets(dt)
+        movement_system(
+            self.world,
+            dt,
+        )
+
         self._update_enemies(dt)
 
         self._handle_bullet_enemy_collisions()
@@ -72,23 +83,35 @@ class Game:
         self._cleanup_destroyed_objects()
         self._check_game_over()
 
+        bullet_lifetime_system(
+            self.world
+        )
+
     def _update_enemies(self, dt):
         for enemy in self.enemies:
             enemy.update(dt, self.player.transform.position)
         pass
 
-    def _update_bullets(self, dt):
-        for bullet in self.bullets:
-            bullet.update(dt)
-        pass
-
     def _handle_bullet_enemy_collisions(self):
-        for bullet in self.bullets:
+        bullets_to_destroy = []
+
+        for entity, bullet_tag, transform, damage in self.world.query(
+            BulletTag,
+            Transform,
+            Damage,
+        ):
             for enemy in self.enemies:
-                if intersects(bullet.transform,enemy.transform,):
-                    bullet.destroyed = True
-                    enemy.take_damage(bullet.damage)
+                if intersects(
+                    transform,
+                    enemy.transform,
+                ):
+                    enemy.take_damage(damage.value)
+
+                    bullets_to_destroy.append(entity)
                     break
+
+        for entity in bullets_to_destroy:
+            self.world.destroy_entity(entity)
 
     def _handle_enemy_player_collisions(self):
         for enemy in self.enemies:
@@ -97,13 +120,6 @@ class Game:
                 break
 
     def _cleanup_destroyed_objects(self):
-        self.bullets = [
-            bullet
-            for bullet in self.bullets
-            if not bullet.is_outside()
-            and not bullet.destroyed
-        ]
-
         self.enemies = [
             enemy
             for enemy in self.enemies
@@ -139,8 +155,47 @@ class Game:
 
     def _spawn_bullets(self, input):
         if input.was_key_pressed(Key.SPACE):
-            bullet = Bullet(self.player.transform.position)
-            self.bullets.append(bullet)
+            self._spawn_bullet()
+
+    def _spawn_bullet(self):
+        entity = self.world.create_entity()
+
+        player_position = self.player.transform.position
+
+        self.world.add_component(
+            entity,
+            Transform(
+                position=Vector2(
+                    player_position.x,
+                    player_position.y,
+                ),
+                scale=Vector2(8.0, 16.0),
+            ),
+        )
+
+        self.world.add_component(
+            entity,
+            Velocity(
+                Vector2(0.0, -500.0)
+            ),
+        )
+
+        self.world.add_component(
+            entity,
+            Damage(1),
+        )
+
+        self.world.add_component(
+            entity,
+            BulletTag(),
+        )
+
+        self.world.add_component(
+            entity,
+            QuadRenderable(
+                color=(1.0, 0.8, 0.2, 1.0),
+            ),
+        )
 
     def render(self, renderer):
         for wall in self.walls:
@@ -160,8 +215,7 @@ class Game:
                 enemy.color
             )
 
-        for bullet in self.bullets:
-            renderer.render(
-                bullet.transform,
-                bullet.color
-            )
+        quad_render_system(
+            self.world,
+            renderer,
+        )
