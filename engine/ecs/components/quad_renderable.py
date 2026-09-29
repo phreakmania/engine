@@ -4,4 +4,4 @@ from engine.texture import Texture
 @dataclass
 class QuadRenderable:
     color: tuple[float, float, float, float]
-    texture: Texture | None = None
+    texture: str | None = None

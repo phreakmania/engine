@@ -3,6 +3,7 @@ import glfw
 from engine.texture import Texture
 
 from .window import Window
+from .resource_manager import ResourceManager
 from .renderer import Renderer
 from .input import Input
 
@@ -15,6 +16,7 @@ class Application:
             virtual_width=1280,
             virtual_height=720,
         )
+        self.resources = ResourceManager()
         self.game = game
 
     def run(self):
@@ -42,7 +44,7 @@ class Application:
         self.game.update(dt, self.input)
 
     def render(self):
-        self.game.render(self.renderer)
+        self.game.render(self.renderer, self.resources)
 
     def shutdown(self):
         self.renderer.shutdown()
