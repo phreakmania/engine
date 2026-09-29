@@ -10,4 +10,5 @@ def quad_render_system(world, renderer):
         renderer.render(
             transform,
             renderable.color,
+            renderable.texture
         )

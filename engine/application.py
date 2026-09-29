@@ -1,7 +1,6 @@
 import glfw
 
-from engine.vector2 import Vector2
-from engine.camera import Camera2D
+from engine.texture import Texture
 
 from .window import Window
 from .renderer import Renderer

@@ -2,3 +2,4 @@ glfw==2.10.2
 numpy==2.5.3
 PyOpenGL==3.1.10
 pyOpenSSL==26.4.0
+pillow==12.3.0
