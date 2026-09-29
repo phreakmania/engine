@@ -1,8 +1,6 @@
 
-from .player import Player
-from .wall import Wall
-from .components import EnemyTag, BulletTag, Damage, Health
-from .bullet_lifetime_system import bullet_lifetime_system
+from .components import PlayerTag, EnemyTag, BulletTag, WallTag, Damage, Health, Invulnerability
+from .systems import invulnerability_system, bullet_lifetime_system
 
 from engine.vector2 import Vector2
 from engine.key import Key
@@ -19,7 +17,6 @@ class Game:
         self.game_over = False
         self.width = width
         self.height = height
-        self.player = Player()
         self.world = World()
 
         self.enemy_spawn_interval = 2.0
@@ -28,24 +25,17 @@ class Game:
         wall_size = 32.0
         half_wall = wall_size * 0.5
 
-        self.walls = [
-            Wall(
-                Vector2(width * 0.5, half_wall),
-                Vector2(width, wall_size),
-            ),
-            Wall(
-                Vector2(width * 0.5, height - half_wall),
-                Vector2(width, wall_size),
-            ),
-            Wall(
-                Vector2(half_wall, height * 0.5),
-                Vector2(wall_size, height),
-            ),
-            Wall(
-                Vector2(width - half_wall, height * 0.5),
-                Vector2(wall_size, height),
-            ),
-        ]
+        self._spawn_walls([
+            Transform(Vector2(width * 0.5, half_wall),
+                            Vector2(width, wall_size)),
+            Transform(Vector2(width * 0.5, height - half_wall),
+                            Vector2(width, wall_size)),
+            Transform(Vector2(half_wall, height * 0.5),
+                            Vector2(wall_size, height)),
+            Transform(Vector2(width - half_wall, height * 0.5),
+                            Vector2(wall_size, height)),
+        ])
+        self._spawn_player()
 
     def update(self, dt, input):
         if self.game_over:
@@ -67,10 +57,65 @@ class Game:
 
         self._check_game_over()
 
+        invulnerability_system(
+            self.world,
+            dt
+        )
         bullet_lifetime_system(
             self.world
         )
 
+    def _spawn_walls(self, transforms):
+        for transform in transforms:
+            entity = self.world.create_entity()
+            self.world.add_component(
+                entity,
+                WallTag()
+            )
+
+            self.world.add_component(
+                entity,
+                transform
+            )
+
+            self.world.add_component(
+                entity,
+                QuadRenderable(
+                    color=(0.3,0.3,0.3,1.0)
+                )
+            )
+
+    def _spawn_player(self):
+        entity = self.world.create_entity()
+        self.world.add_component(
+            entity,
+            PlayerTag()
+        )
+
+        self.world.add_component(
+            entity,
+            Transform(
+                position=Vector2(640.0, 360.0),
+                scale=Vector2(32.0, 32.0),
+            ),
+        )
+
+        self.world.add_component(
+            entity,
+            Health(5)
+        )
+
+        self.world.add_component(
+            entity,
+            Invulnerability(0.5)
+        )
+
+        self.world.add_component(
+            entity,
+            QuadRenderable(
+                color=(0.2, 0.2, 0.7, 1.0),
+            ),
+        )
 
     def _spawn_enemies(self, dt):
         self.enemy_spawn_timer += dt
@@ -114,14 +159,25 @@ class Game:
                 Velocity(Vector2()),
             )
 
+    def _get_player_position(self):
+        return self._get_player_transform().position
+
+    def _get_player_transform(self):
+        results = list(self.world.query(PlayerTag, Transform))
+        (entity, player_tag, player_transform) = (results[0])
+        return player_transform
+
     def _update_enemies(self):
+        player_position = self._get_player_position()
+
         for entity, enemy_tag, transform, velocity in self.world.query(
             EnemyTag,
             Transform,
             Velocity,
         ):
+
             direction = (
-                self.player.transform.position
+                player_position
                 - transform.position
             ).normalized()
 
@@ -156,17 +212,31 @@ class Game:
             self.world.destroy_entity(entity)
 
     def _handle_enemy_player_collisions(self):
-        for entity, enemy_tag, transform, damage in self.world.query(
-            EnemyTag,
+        for player_entity, player_tag, player_transform, health, invulnerability in self.world.query(
+            PlayerTag,
             Transform,
-            Damage,
+            Health,
+            Invulnerability,
         ):
-            if intersects(transform, self.player.transform):
-                self.player.take_damage(damage.value)
-                break
+            if invulnerability.remaining > 0.0:
+                return
+
+                
+            for entity, enemy_tag, transform, damage in self.world.query(
+                EnemyTag,
+                Transform,
+                Damage,
+            ):
+                if intersects(transform, player_transform):
+                    health.current -= damage.value
+                    invulnerability.remaining = invulnerability.duration
+                    break
 
     def _check_game_over(self):
-        if self.player.is_dead():
+        results = list(self.world.query(PlayerTag, Health))
+        (entity, player_tag, player_health) = (results[0])
+        
+        if player_health.current <= 0:
             self.game_over = True
             print("Game Over!")
 
@@ -184,13 +254,27 @@ class Game:
         if input.is_key_down(Key.S):
             direction.y += 1.0
 
-        self.player.move(
-            direction,
-            dt,
-            self.walls
-        )
+        self._move_player(direction, dt)
 
-        self.player.update(dt)
+    def _move_player(self, direction, dt):
+        transform = self._get_player_transform()
+
+        direction = direction.normalized()
+        movement = direction * 200.0 * dt
+
+        transform.position.x += movement.x
+
+        for entity, wall_tag, wall_transform in self.world.query(WallTag, Transform):
+            if intersects(transform, wall_transform):
+                transform.position.x -= movement.x
+                break
+
+        transform.position.y += movement.y
+
+        for entity, wall_tag, wall_transform in self.world.query(WallTag, Transform):
+            if intersects(transform, wall_transform):
+                transform.position.y -= movement.y
+                break
 
     def _spawn_bullets(self, input):
         if input.was_key_pressed(Key.SPACE):
@@ -199,7 +283,7 @@ class Game:
     def _spawn_bullet(self):
         entity = self.world.create_entity()
 
-        player_position = self.player.transform.position
+        player_position = self._get_player_position()
 
         self.world.add_component(
             entity,
@@ -237,17 +321,6 @@ class Game:
         )
 
     def render(self, renderer):
-        for wall in self.walls:
-            renderer.render(
-                wall.transform,
-                wall.color,
-            )
-
-        renderer.render(
-            self.player.transform,
-            self.player.color
-        )
-
         quad_render_system(
             self.world,
             renderer,
