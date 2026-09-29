@@ -9,3 +9,9 @@ class ResourceManager:
             self._textures[path] = Texture(path)
 
         return self._textures[path]
+
+    def shutdown(self):
+        for texture in self._textures.values():
+            texture.shutdown()
+
+        self._textures.clear()    

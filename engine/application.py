@@ -47,5 +47,6 @@ class Application:
         self.game.render(self.renderer, self.resources)
 
     def shutdown(self):
+        self.resources.shutdown()
         self.renderer.shutdown()
         self.window.shutdown()
