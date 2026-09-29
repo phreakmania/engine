@@ -7,3 +7,7 @@ source = ["engine", "game"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.mutmut]
+source_paths = ["engine/", "game/"]
+pytest_add_cli_args_test_selection = ["tests/"]

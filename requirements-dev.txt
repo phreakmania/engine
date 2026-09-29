@@ -1,2 +1,4 @@
+-r requirements.txt
 pytest
 coverage
+mutmut==3.8.0

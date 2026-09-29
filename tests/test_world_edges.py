@@ -63,3 +63,41 @@ class WorldEdgeTests(unittest.TestCase):
 
         self.assertIsNone(world.get_component(entity, Marker))
         self.assertEqual(list(world.query(Marker)), [])
+
+    def test_missing_component_type_or_entity_returns_none(self):
+        world = World()
+        entity = world.create_entity()
+        world.add_component(entity, Marker(1))
+
+        self.assertIsNone(world.get_component(entity, Other))
+        self.assertIsNone(world.get_component(entity + 1, Marker))
+
+    def test_removing_component_twice_is_safe_and_keeps_other_components(self):
+        world = World()
+        entity = world.create_entity()
+        other_entity = world.create_entity()
+        other = Other(2)
+        world.add_component(entity, Marker(1))
+        world.add_component(entity, other)
+        world.add_component(other_entity, Marker(3))
+
+        world.remove_component(entity, Marker)
+        world.remove_component(entity, Marker)
+
+        self.assertIsNone(world.get_component(entity, Marker))
+        self.assertIs(world.get_component(entity, Other), other)
+        self.assertEqual([item[0] for item in world.query(Marker)], [other_entity])
+
+    def test_destroy_removes_every_component_and_does_not_reuse_entity_id(self):
+        world = World()
+        entity = world.create_entity()
+        world.add_component(entity, Marker(1))
+        world.add_component(entity, Other(2))
+
+        world.destroy_entity(entity)
+        next_entity = world.create_entity()
+
+        self.assertNotEqual(next_entity, entity)
+        self.assertIsNone(world.get_component(entity, Marker))
+        self.assertIsNone(world.get_component(entity, Other))
+        self.assertEqual(list(world.query(Marker, Other)), [])
