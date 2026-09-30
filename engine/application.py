@@ -13,7 +13,7 @@ class Application:
         )
         self.game = game
 
-    def run(self: Application):
+    def run(self):
         last_time = glfw.get_time()
 
         while not self.window.should_close():
@@ -40,6 +40,6 @@ class Application:
     def render(self):
         self.game.render(self.renderer)
 
-    def shutdown(self: Application):
+    def shutdown(self):
         self.renderer.shutdown()
         self.window.shutdown()

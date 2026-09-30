@@ -14,11 +14,11 @@ class Game:
         self.width = width
         self.height = height
         self.player = Player()
-        self.enemies = [
-            Enemy(x=320.0, y=240.0),
-            Enemy(x=640.0, y=60.0),
-        ]
+        self.enemies = []
         self.bullets = []
+
+        self.enemy_spawn_interval = 2.0
+        self.enemy_spawn_timer = 0.0
 
         wall_size = 32.0
         half_wall = wall_size * 0.5
@@ -42,12 +42,26 @@ class Game:
             ),
         ]
 
+    def _spawn_enemies(self, dt):
+        self.enemy_spawn_timer += dt
+
+        if self.enemy_spawn_timer >= self.enemy_spawn_interval:
+            self.enemy_spawn_timer -= self.enemy_spawn_interval
+
+            enemy = Enemy(
+                x=self.width * 0.5,
+                y=80.0,
+            )
+
+            self.enemies.append(enemy)
+
     def update(self, dt, input):
         if self.game_over:
             return
 
         self._update_player(dt, input)
         self._spawn_bullets(input)
+        self._spawn_enemies(dt)
 
         self._update_bullets(dt)
         self._update_enemies(dt)
