@@ -1,0 +1,13 @@
+{
+    "entities": [
+        {
+            "components": {
+                "Transform": {
+                    "position": [400.0, 300.0],
+                    "scale": [64.0, 64.0],
+                    "rotation": 0.0
+                }
+            }
+        }
+    ]
+}
