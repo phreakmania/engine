@@ -10,6 +10,7 @@ from engine.timer import Timer
 from engine.collision import intersects
 from engine.scene_loader import SceneLoader
 from engine.ecs.component_registry import ComponentRegistry
+from engine.ecs.components.parent import Parent
 from engine.ecs.components.transform import Transform
 from engine.ecs.components.velocity import Velocity
 from engine.ecs.components.player_spawn import PlayerSpawn
@@ -156,6 +157,29 @@ class Game:
             entity,
             QuadRenderable(
                 color=(0.2, 0.2, 0.7, 1.0),
+            ),
+        )
+
+        child = self.world.create_entity()
+
+        self.world.add_component(
+            child,
+            Transform(
+                position=Vector2(40.0, 0.0),
+                scale=Vector2(16.0, 16.0),
+            ),
+        )
+
+        self.world.add_component(
+            child,
+            Parent(entity),
+        )
+
+        self.world.add_component(
+            child,
+            QuadRenderable(
+                color=(1.0, 1.0, 0.0, 1.0),
+                z_index=10,
             ),
         )
 
