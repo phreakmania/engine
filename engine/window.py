@@ -1,4 +1,13 @@
 import glfw
+from .key import Key
+
+KEY_MAP = {
+    Key.W: glfw.KEY_W,
+    Key.A: glfw.KEY_A,
+    Key.S: glfw.KEY_S,
+    Key.D: glfw.KEY_D,
+    Key.SPACE: glfw.KEY_SPACE,
+}
 
 class Window:
     def __init__(self, width=1280, height=720, title="New Window"):
@@ -13,16 +22,12 @@ class Window:
         glfw.make_context_current(self.window)
 
     def is_key_pressed(self, key):
-        keys = {
-            "w": glfw.KEY_W,
-            "a": glfw.KEY_A,
-            "s": glfw.KEY_S,
-            "d": glfw.KEY_D,
-        }
+        glfw_key = KEY_MAP[key]
 
-        glfw_key = keys[key]
-
-        return glfw.get_key(self.window, glfw_key) == glfw.PRESS
+        return glfw.get_key(
+            self.window,
+            glfw_key,
+        ) == glfw.PRESS
 
     def should_close(self):
         return glfw.window_should_close(self.window)
