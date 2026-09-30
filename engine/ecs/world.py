@@ -50,6 +50,9 @@ class World:
     def get_component(self, entity: Entity, component_type: type):
         return self._components.get(component_type, {}).get(entity)
 
+    def is_alive(self, entity: Entity) -> bool:
+        return entity in self._alive
+
     def query(self, *component_types):
         if not component_types:
             return

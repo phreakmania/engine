@@ -19,6 +19,12 @@ class Vector2:
 
         return self / length
 
+    def __eq__(self, other):
+        if not isinstance(other, Vector2):
+            return NotImplemented
+
+        return self.x == other.x and self.y == other.y
+
     def __add__(self, other):
         return Vector2(self.x + other.x, self.y + other.y)
 
