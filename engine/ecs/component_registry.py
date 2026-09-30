@@ -3,6 +3,7 @@ from ..vector2 import Vector2
 from .components.player_spawn import PlayerSpawn
 from .components.transform import Transform
 from .components.velocity import Velocity
+from .components.parent import Parent
 from .components.quad_renderable import QuadRenderable
 
 class ComponentRegistry:
@@ -16,7 +17,7 @@ class ComponentRegistry:
                     lambda data: Transform(
                         position=Vector2(*data["position"]),
                         scale=Vector2(*data["scale"]),
-                        rotation=data["rotation"],
+                        rotation=data.get("rotation"),
                     )
                 )
         
@@ -25,6 +26,7 @@ class ComponentRegistry:
             lambda data: QuadRenderable(
                 color=tuple(data["color"]),
                 texture=data.get("texture"),
+                # Scene files use kebab-case; retain snake_case for Python callers.
                 z_index=data.get("z_index", 0)
             )
         )
@@ -35,6 +37,14 @@ class ComponentRegistry:
                 value=Vector2(*data["value"])
             )
         )
+
+        self.register(
+            "Parent",
+            lambda data: Parent(
+                entity=data["entity"]
+            )
+        )
+
 
         self.register(
             "PlayerSpawn",

@@ -3,6 +3,7 @@ import unittest
 from engine.scene import Scene
 from engine.scene_loader import SceneLoader
 from engine.ecs.component_registry import ComponentRegistry
+from engine.ecs.components.parent import Parent
 from engine.ecs.components.transform import Transform
 from engine.ecs.components.quad_renderable import QuadRenderable
 
@@ -18,7 +19,7 @@ class SceneLoaderTests(unittest.TestCase):
         scene = SceneLoader(registry).load("tests/assets/test_scene.json")
         results = list(scene.world.query(Transform))
 
-        self.assertEqual(len(results), 2)
+        self.assertEqual(len(results), 4)
 
         entity, transform = results[0]
 
@@ -50,6 +51,33 @@ class SceneLoaderTests(unittest.TestCase):
         entity, renderable = results[1]
         self.assertEqual(renderable.z_index, 0)
 
+    def test_loads_parent_relationship(self):
+        registry = ComponentRegistry()
+        scene = SceneLoader(registry).load(
+            "tests/assets/test_scene.json"
+        )
+
+        results = list(
+            scene.world.query(
+                Transform,
+                Parent,
+            )
+        )
+
+        self.assertEqual(len(results), 1)
+
+        child_entity, child_transform, parent = results[0]
+
+        parent_transform = scene.world.get_component(
+            parent.entity,
+            Transform,
+        )
+
+        self.assertEqual(child_transform.position.x, 20.0)
+        self.assertEqual(child_transform.position.y, 10.0)
+
+        self.assertEqual(parent_transform.position.x, 100.0)
+        self.assertEqual(parent_transform.position.y, 50.0)
 
 if __name__ == "__main__":
     unittest.main()

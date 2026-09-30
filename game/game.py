@@ -55,7 +55,7 @@ class Game:
         )
 
         self.scene_loader = SceneLoader(registry)
-        self.scene = self.scene_loader.load("game/assets/scenes/test_scene.json")
+        self.scene = self.scene_loader.load("game/assets/scenes/main.json")
         self.world = self.scene.world
         self.camera = Camera2D()
 

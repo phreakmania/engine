@@ -11,6 +11,7 @@
             }
         },
         {
+            "id": "big_enemy",
             "components": {
                 "Transform": {
                     "position": [400.0, 300.0],
@@ -83,6 +84,22 @@
                     "color": [0.2, 0.2, 0.2, 1.0]
                 },
                 "WallTag": {}
+            }
+        },
+        {
+            "components":{
+                "Transform": {
+                    "position": [20.0, 20.0],
+                    "scale": [32.0,32.0],
+                    "rotation": 0.0
+                },
+                "QuadRenderable": {
+                    "color": [1.0,1.0,1.0,1.0],
+                    "z_index": 10
+                },
+                "Parent": {
+                    "entity": "big_enemy"
+                }
             }
         }
     ]
