@@ -1,6 +1,16 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
+[tool.mypy]
+python_version = "3.12"
+check_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pyright]
+include = ["engine", "game", "main.py"]
+pythonVersion = "3.12"
+typeCheckingMode = "standard"
+
 [tool.coverage.run]
 branch = true
 source = ["engine", "game"]

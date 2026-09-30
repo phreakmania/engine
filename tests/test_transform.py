@@ -81,7 +81,8 @@ class TransformTests(unittest.TestCase):
         result = get_world_transform(world, grandchild)
 
         self.assertEqual(result.position.x, 160.0)
-        self.assertEqual(result.position.y, 50.0)        
-        
+        self.assertEqual(result.position.y, 50.0)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -53,7 +53,7 @@ class Game:
                 current=data["current"]
             )
         )
- 
+
         registry.register(
             "Damage",
             lambda data: Damage(
@@ -121,7 +121,7 @@ class Game:
             self.world.add_component(
                 entity,
                 QuadRenderable(
-                    color=(0.3,0.3,0.3,1.0)
+                    color=(0.3, 0.3, 0.3, 1.0)
                 )
             )
 
@@ -133,7 +133,7 @@ class Game:
         ))
 
         _, player_spawn_transform, _ = results[0]
-              
+
         entity = self.world.create_entity()
         self.world.add_component(
             entity,
@@ -260,7 +260,13 @@ class Game:
             self.world.destroy_entity(entity)
 
     def _handle_enemy_player_collisions(self):
-        for player_entity, player_tag, player_transform, health, invulnerability in self.world.query(
+        for (
+            player_entity,
+            player_tag,
+            player_transform,
+            health,
+            invulnerability,
+        ) in self.world.query(
             PlayerTag,
             Transform,
             Health,
@@ -269,7 +275,6 @@ class Game:
             if invulnerability.timer.remaining > 0.0:
                 return
 
-                
             for entity, enemy_tag, transform, damage in self.world.query(
                 EnemyTag,
                 Transform,
@@ -283,7 +288,7 @@ class Game:
     def _check_game_over(self):
         results = list(self.world.query(PlayerTag, Health))
         (_, _, player_health) = (results[0])
-        
+
         if player_health.current <= 0:
             self.game_over = True
             print("Game Over!")
@@ -302,7 +307,7 @@ class Game:
         if input.is_key_down(Key.S):
             direction.y += 1.0
         self._move_player(direction, dt)
-        
+
     def _update_timers(self, dt):
         for _, invulnerability in self.world.query(Invulnerability):
             invulnerability.timer.update(dt)

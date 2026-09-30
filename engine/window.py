@@ -10,6 +10,7 @@ KEY_MAP = {
     Key.SPACE: glfw.KEY_SPACE,
 }
 
+
 class Window:
     def __init__(self, width=1280, height=720, title="New Window"):
         if not glfw.init():

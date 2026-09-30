@@ -235,7 +235,8 @@ class GameTests(unittest.TestCase):
         self.game.world.add_component(bullet_entity, BulletTag())
         self.game.world.add_component(
             bullet_entity,
-            Transform(position=Vector2(enemy_transform.position.x, enemy_transform.position.y), scale=Vector2(8, 8)),
+            Transform(position=Vector2(enemy_transform.position.x,
+                      enemy_transform.position.y), scale=Vector2(8, 8)),
         )
         self.game.world.add_component(bullet_entity, Damage(1))
 
@@ -252,7 +253,8 @@ class GameTests(unittest.TestCase):
         self.game.world.add_component(bullet_entity, BulletTag())
         self.game.world.add_component(
             bullet_entity,
-            Transform(position=Vector2(enemy_transform.position.x, enemy_transform.position.y), scale=Vector2(8, 8)),
+            Transform(position=Vector2(enemy_transform.position.x,
+                      enemy_transform.position.y), scale=Vector2(8, 8)),
         )
         self.game.world.add_component(bullet_entity, Damage(1))
 
@@ -299,7 +301,8 @@ class GameTests(unittest.TestCase):
         self.game.world.add_component(enemy_entity, EnemyTag())
         self.game.world.add_component(
             enemy_entity,
-            Transform(position=Vector2(player_transform.position.x, player_transform.position.y), scale=Vector2(8, 8)),
+            Transform(position=Vector2(player_transform.position.x,
+                      player_transform.position.y), scale=Vector2(8, 8)),
         )
         self.game.world.add_component(enemy_entity, Damage(2))
 

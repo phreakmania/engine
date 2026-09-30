@@ -10,7 +10,14 @@ class ApplicationTests(unittest.TestCase):
     @patch("engine.application.Renderer")
     @patch("engine.application.Input")
     @patch("engine.application.Window")
-    def test_run_updates_renders_and_shuts_down(self, window_class, input_class, renderer_class, resources_class, glfw):
+    def test_run_updates_renders_and_shuts_down(
+        self,
+        window_class,
+        input_class,
+        renderer_class,
+        resources_class,
+        glfw,
+    ):
         window = window_class.return_value
         window.should_close.side_effect = (False, True)
         window.get_framebuffer_size.return_value = (800, 600)
@@ -21,7 +28,8 @@ class ApplicationTests(unittest.TestCase):
         app.run()
 
         game.update.assert_called_once_with(0.25, input_class.return_value)
-        game.render.assert_called_once_with(renderer_class.return_value, resources_class.return_value)
+        game.render.assert_called_once_with(
+            renderer_class.return_value, resources_class.return_value)
         renderer_class.return_value.resize.assert_called_once_with(800, 600)
         renderer_class.return_value.begin_frame.assert_called_once()
         window.poll_events.assert_called_once()

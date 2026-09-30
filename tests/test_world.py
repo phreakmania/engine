@@ -137,5 +137,6 @@ class WorldTests(unittest.TestCase):
         self.assertFalse(world.is_alive(child))
         self.assertFalse(world.is_alive(grandchild))
 
+
 if __name__ == "__main__":
     unittest.main()

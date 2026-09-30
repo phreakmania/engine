@@ -14,14 +14,14 @@ class ComponentRegistry:
 
     def _register_engine_components(self):
         self.register(
-                    "Transform",
-                    lambda data: Transform(
-                        position=Vector2(*data["position"]),
-                        scale=Vector2(*data["scale"]),
-                        rotation=data.get("rotation"),
-                    )
-                )
-        
+            "Transform",
+            lambda data: Transform(
+                position=Vector2(*data["position"]),
+                scale=Vector2(*data["scale"]),
+                rotation=data.get("rotation"),
+            )
+        )
+
         self.register(
             "QuadRenderable",
             lambda data: QuadRenderable(
@@ -46,12 +46,10 @@ class ComponentRegistry:
             )
         )
 
-
         self.register(
             "PlayerSpawn",
             lambda data: PlayerSpawn()
         )
-        
 
     def register(self, name, loader):
         self._loaders[name] = loader
