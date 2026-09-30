@@ -17,7 +17,7 @@ class Vector2:
         if length == 0:
             return Vector2()
 
-        return self / length;
+        return self / length
 
     def __add__(self, other: Vector2):
         return Vector2(self.x + other.x, self.y + other.y)

@@ -1,4 +1,3 @@
-import math
 
 from .player import Player
 from .enemy import Enemy
@@ -7,7 +6,6 @@ from .wall import Wall
 
 from engine.vector2 import Vector2
 from engine.key import Key
-from engine.input import Input
 from engine.collision import intersects
 
 class Game:
@@ -16,87 +14,75 @@ class Game:
         self.width = width
         self.height = height
         self.player = Player()
-        self.enemy = Enemy(x=320,y=240)
-        self.enemy2 = Enemy(x=640, y=60)
-        self.enemies = [self.enemy, self.enemy2]
+        self.enemies = [
+            Enemy(x=320.0, y=240.0),
+            Enemy(x=640.0, y=60.0),
+        ]
         self.bullets = []
 
         wall_size = 32.0
+        half_wall = wall_size * 0.5
 
         self.walls = [
-            # oben
             Wall(
-                Vector2(640.0, 16.0),
-                Vector2(1280.0, 32.0),
+                Vector2(width * 0.5, half_wall),
+                Vector2(width, wall_size),
             ),
-
-            # unten
             Wall(
-                Vector2(640.0, 704.0),
-                Vector2(1280.0, 32.0),
+                Vector2(width * 0.5, height - half_wall),
+                Vector2(width, wall_size),
             ),
-
-            # links
             Wall(
-                Vector2(16.0, 360.0),
-                Vector2(32.0, 720.0),
+                Vector2(half_wall, height * 0.5),
+                Vector2(wall_size, height),
             ),
-
-            # rechts
             Wall(
-                Vector2(1264.0, 360.0),
-                Vector2(32.0, 720.0),
+                Vector2(width - half_wall, height * 0.5),
+                Vector2(wall_size, height),
             ),
         ]
-
 
     def update(self, dt, input):
         if self.game_over:
             return
-        direction = Vector2()
 
-        if input.was_key_pressed(Key.SPACE):
-            bullet = Bullet(self.player.transform.position)
-            self.bullets.append(bullet)
+        self._update_player(dt, input)
+        self._spawn_bullets(input)
 
+        self._update_bullets(dt)
+        self._update_enemies(dt)
+
+        self._handle_bullet_enemy_collisions()
+        self._handle_enemy_player_collisions()
+
+        self._cleanup_destroyed_objects()
+        self._check_game_over()
+
+    def _update_enemies(self, dt):
+        for enemy in self.enemies:
+            enemy.update(dt, self.player.transform.position)
+        pass
+
+    def _update_bullets(self, dt):
         for bullet in self.bullets:
             bullet.update(dt)
+        pass
+
+    def _handle_bullet_enemy_collisions(self):
+        for bullet in self.bullets:
             for enemy in self.enemies:
                 if intersects(bullet.transform,enemy.transform,):
                     bullet.destroyed = True
                     enemy.take_damage(bullet.damage)
+                    break
 
+    def _handle_enemy_player_collisions(self):
         for enemy in self.enemies:
-            enemy.update(dt, self.player.transform.position)
             if intersects(enemy.transform, self.player.transform,):
                 self.player.take_damage(enemy.damage)
+                break
 
-        if self.player.is_dead():
-            self.game_over = True
-            print("Game Over!")
-
-        if input.is_key_down(Key.D):
-            direction.x += 1.0
-
-        if input.is_key_down(Key.A):
-            direction.x -= 1.0
-
-        if input.is_key_down(Key.W):
-            direction.y -= 1.0
-
-        if input.is_key_down(Key.S):
-            direction.y += 1.0
-
-        direction = direction.normalized()
-
-        self.player.move(
-            direction,
-            dt,
-            self.walls
-        )
-
-        self.player.update(dt)
-
+    def _cleanup_destroyed_objects(self):
         self.bullets = [
             bullet
             for bullet in self.bullets
@@ -109,6 +95,38 @@ class Game:
             for enemy in self.enemies
             if not enemy.destroyed
         ]
+
+    def _check_game_over(self):
+        if self.player.is_dead():
+            self.game_over = True
+            print("Game Over!")
+
+    def _update_player(self, dt, input):
+        direction = Vector2()
+        if input.is_key_down(Key.D):
+            direction.x += 1.0
+
+        if input.is_key_down(Key.A):
+            direction.x -= 1.0
+
+        if input.is_key_down(Key.W):
+            direction.y -= 1.0
+
+        if input.is_key_down(Key.S):
+            direction.y += 1.0
+
+        self.player.move(
+            direction,
+            dt,
+            self.walls
+        )
+
+        self.player.update(dt)
+
+    def _spawn_bullets(self, input):
+        if input.was_key_pressed(Key.SPACE):
+            bullet = Bullet(self.player.transform.position)
+            self.bullets.append(bullet)
 
     def render(self, renderer):
         for wall in self.walls:
