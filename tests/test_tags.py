@@ -8,9 +8,11 @@ from engine.ecs.world import World
 class CustomTag:
     pass
 
+
 @dataclass
 class AnotherTag:
     pass
+
 
 class TagTests(unittest.TestCase):
     def test_query_tag_returns_only_matching_entities(self):
@@ -30,6 +32,7 @@ class TagTests(unittest.TestCase):
 
         self.assertEqual(entity, first)
         self.assertIsInstance(tag, CustomTag)
-        
+
+
 if __name__ == "__main__":
     unittest.main()

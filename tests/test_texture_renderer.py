@@ -113,16 +113,20 @@ class RendererTests(unittest.TestCase):
             "glViewport", "glDeleteBuffers", "glDeleteVertexArrays", "glDeleteProgram",
         ]
         mocks = {name: stack.enter_context(patch.object(module, name)) for name in functions}
-        mocks["glGenVertexArrays" ] = stack.enter_context(patch.object(module, "glGenVertexArrays", return_value=10))
+        mocks["glGenVertexArrays"] = stack.enter_context(
+            patch.object(module, "glGenVertexArrays", return_value=10))
         buffer_ids = iter((20, 30))
         mocks["glGenBuffers"] = stack.enter_context(
             patch.object(module, "glGenBuffers", side_effect=lambda count: next(buffer_ids))
         )
-        mocks["compileShader"] = stack.enter_context(patch.object(module, "compileShader", side_effect=lambda source, kind: kind))
-        mocks["compileProgram"] = stack.enter_context(patch.object(module, "compileProgram", return_value=99))
+        mocks["compileShader"] = stack.enter_context(patch.object(
+            module, "compileShader", side_effect=lambda source, kind: kind))
+        mocks["compileProgram"] = stack.enter_context(
+            patch.object(module, "compileProgram", return_value=99))
         location = iter(range(1, 8))
         mocks["glGetUniformLocation"] = stack.enter_context(
-            patch.object(module, "glGetUniformLocation", side_effect=lambda shader, name: next(location))
+            patch.object(module, "glGetUniformLocation",
+                         side_effect=lambda shader, name: next(location))
         )
         renderer = Renderer(Camera2D(), virtual_width=100, virtual_height=50)
         return stack, renderer, mocks

@@ -58,7 +58,7 @@ class QuadRenderSystemTests(unittest.TestCase):
             position=Vector2(10.0, 20.0)
         )
         renderable = QuadRenderable(
-            color=(0.3,0.3,0.3,1.0),
+            color=(0.3, 0.3, 0.3, 1.0),
             texture="assets/enemy.png",
         )
 
@@ -131,6 +131,7 @@ class QuadRenderSystemTests(unittest.TestCase):
             rendered_transform.scale,
             Vector2(8.0, 8.0),
         )
+
 
 if __name__ == "__main__":
     unittest.main()

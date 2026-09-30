@@ -1,15 +1,17 @@
-from typing import TypeAlias
+from collections.abc import Iterator
+from typing import Any, TypeAlias
 
 Entity: TypeAlias = int
 
+
 class World:
-    def __init__(self):
+    def __init__(self) -> None:
         self._next_entity: Entity = 1
         self._alive: set[Entity] = set()
 
         self._components: dict[
             type,
-            dict[Entity, object],
+            dict[Entity, Any],
         ] = {}
 
     def create_entity(self) -> Entity:
@@ -20,13 +22,13 @@ class World:
 
         return entity
 
-    def destroy_entity(self, entity: Entity):
+    def destroy_entity(self, entity: Entity) -> None:
         self._alive.discard(entity)
 
         for store in self._components.values():
             store.pop(entity, None)
 
-    def add_component(self, entity: Entity, component):
+    def add_component(self, entity: Entity, component: Any) -> None:
         if entity not in self._alive:
             raise ValueError(
                 f"Entity {entity} does not exist"
@@ -41,19 +43,21 @@ class World:
 
         store[entity] = component
 
-    def remove_component(self, entity: Entity, component_type: type):
+    def remove_component(self, entity: Entity, component_type: type[Any]) -> None:
         store = self._components.get(component_type)
 
         if store is not None:
             store.pop(entity, None)
 
-    def get_component(self, entity: Entity, component_type: type):
+    def get_component(
+        self, entity: Entity, component_type: type[Any]
+    ) -> Any | None:
         return self._components.get(component_type, {}).get(entity)
 
     def is_alive(self, entity: Entity) -> bool:
         return entity in self._alive
 
-    def query(self, *component_types):
+    def query(self, *component_types: type[Any]) -> Iterator[tuple[Any, ...]]:
         if not component_types:
             return
 

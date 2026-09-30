@@ -32,5 +32,3 @@ class TimerTests(unittest.TestCase):
         timer.restart()
 
         self.assertEqual(timer.remaining, timer.duration)
-    
-

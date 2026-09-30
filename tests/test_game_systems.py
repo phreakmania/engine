@@ -43,7 +43,8 @@ class GameSystemsTests(unittest.TestCase):
         world.add_component(touching_edge, BulletTag())
         world.add_component(touching_edge, Transform(position=Vector2(0, -8), scale=Vector2(1, 16)))
         world.add_component(just_visible, BulletTag())
-        world.add_component(just_visible, Transform(position=Vector2(0, -7.5), scale=Vector2(1, 16)))
+        world.add_component(just_visible, Transform(
+            position=Vector2(0, -7.5), scale=Vector2(1, 16)))
         world.add_component(unrelated, Transform(position=Vector2(0, -100), scale=Vector2(1, 1)))
 
         bullet_lifetime_system(world)

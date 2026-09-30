@@ -1,4 +1,16 @@
-from OpenGL.GL import *
+from OpenGL.GL import (
+    GL_NEAREST,
+    GL_RGBA,
+    GL_TEXTURE_2D,
+    GL_TEXTURE_MAG_FILTER,
+    GL_TEXTURE_MIN_FILTER,
+    GL_UNSIGNED_BYTE,
+    glBindTexture,
+    glDeleteTextures,
+    glGenTextures,
+    glTexImage2D,
+    glTexParameteri,
+)
 from PIL import Image
 
 

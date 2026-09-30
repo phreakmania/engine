@@ -4,5 +4,5 @@ from ...vector2 import Vector2
 
 
 @dataclass
-class Velocity: 
+class Velocity:
     value: Vector2

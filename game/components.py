@@ -7,25 +7,31 @@ from engine.timer import Timer
 class BulletTag:
     pass
 
+
 @dataclass
 class EnemyTag:
     pass
+
 
 @dataclass
 class WallTag:
     pass
 
+
 @dataclass
 class PlayerTag:
     pass
+
 
 @dataclass
 class Damage:
     value: int
 
+
 @dataclass
 class Health:
-    current: int    
+    current: int
+
 
 @dataclass
 class Invulnerability:

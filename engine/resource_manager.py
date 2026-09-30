@@ -15,4 +15,4 @@ class ResourceManager:
         for texture in self._textures.values():
             texture.shutdown()
 
-        self._textures.clear()    
+        self._textures.clear()

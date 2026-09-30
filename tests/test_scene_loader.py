@@ -83,16 +83,17 @@ class SceneLoaderTests(unittest.TestCase):
     def test_loads_duplicate_scene_id(self):
         registry = ComponentRegistry()
         with self.assertRaises(ValueError):
-            scene = SceneLoader(registry).load(
+            SceneLoader(registry).load(
                 "tests/assets/test_duplicate.json"
             )
 
     def test_loads_invalid_scene_id(self):
         registry = ComponentRegistry()
         with self.assertRaises(ValueError):
-            scene = SceneLoader(registry).load(
+            SceneLoader(registry).load(
                 "tests/assets/test_duplicate.json"
             )
+
 
 if __name__ == "__main__":
     unittest.main()

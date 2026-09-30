@@ -1,7 +1,49 @@
 import ctypes
 
 import numpy as np
-from OpenGL.GL import *
+from OpenGL.GL import (
+    GL_ARRAY_BUFFER,
+    GL_BLEND,
+    GL_COLOR_BUFFER_BIT,
+    GL_ELEMENT_ARRAY_BUFFER,
+    GL_FALSE,
+    GL_FLOAT,
+    GL_FRAGMENT_SHADER,
+    GL_ONE_MINUS_SRC_ALPHA,
+    GL_SRC_ALPHA,
+    GL_STATIC_DRAW,
+    GL_TEXTURE0,
+    GL_TEXTURE_2D,
+    GL_TRIANGLES,
+    GL_TRUE,
+    GL_UNSIGNED_INT,
+    GL_VERTEX_SHADER,
+    glActiveTexture,
+    glBindBuffer,
+    glBindVertexArray,
+    glBindTexture,
+    glBlendFunc,
+    glBufferData,
+    glClear,
+    glClearColor,
+    glDeleteBuffers,
+    glDeleteProgram,
+    glDeleteVertexArrays,
+    glDrawElements,
+    glEnable,
+    glEnableVertexAttribArray,
+    glGenBuffers,
+    glGenVertexArrays,
+    glGetUniformLocation,
+    glUniform1f,
+    glUniform1i,
+    glUniform2f,
+    glUniform4f,
+    glUniformMatrix4fv,
+    glUseProgram,
+    glVertexAttribPointer,
+    glViewport,
+)
 from OpenGL.GL.shaders import compileProgram, compileShader
 
 from engine.camera import Camera2D
@@ -75,9 +117,7 @@ class Renderer:
         }
         """
 
-
-        glClearColor(0.1,0.15,0.2,1.0)
-
+        glClearColor(0.1, 0.15, 0.2, 1.0)
 
         glEnable(GL_BLEND)
 
@@ -85,7 +125,7 @@ class Renderer:
             GL_SRC_ALPHA,
             GL_ONE_MINUS_SRC_ALPHA,
         )
-        
+
         vertices = np.array([
             -0.5, -0.5,  0.0, 0.0,
             0.5, -0.5,  1.0, 0.0,
@@ -145,7 +185,7 @@ class Renderer:
             compileShader(vertex_shader_source, GL_VERTEX_SHADER),
             compileShader(fragment_shader_source, GL_FRAGMENT_SHADER),
         )
- 
+
         self.offset_location = glGetUniformLocation(
             self.shader,
             "offset",
@@ -194,14 +234,13 @@ class Renderer:
             self.texture_sampler_location,
             0,
         )
-        
+
         glUniformMatrix4fv(
             self.projection_location,
             1,
             GL_TRUE,
             projection,
         )
-
 
     def resize(self, framebuffer_width, framebuffer_height):
         target_aspect = self.virtual_width / self.virtual_height

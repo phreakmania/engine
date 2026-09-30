@@ -12,4 +12,3 @@ def destroy_entity_tree(world, entity):
         destroy_entity_tree(world, child)
 
     world.destroy_entity(entity)
-    
