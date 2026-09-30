@@ -13,6 +13,17 @@ class ResourceManagerTests(unittest.TestCase):
             assert texture1 is texture2
             texture_class.assert_called_once_with("assets/enemy.png")
 
+    def test_different_paths_are_loaded_independently(self):
+        resources = ResourceManager()
+
+        with patch("engine.resource_manager.Texture") as texture_class:
+            texture_class.side_effect = [object(), object()]
+            first = resources.get_texture("one.png")
+            second = resources.get_texture("two.png")
+
+            self.assertIsNot(first, second)
+            self.assertEqual(texture_class.call_count, 2)
+
 
 if __name__ == "__main__":
     unittest.main()
