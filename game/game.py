@@ -203,29 +203,6 @@ class Game:
                 Velocity(Vector2()),
             )
 
-            child = self.world.create_entity()
-
-            self.world.add_component(
-                child,
-                Transform(
-                    position=Vector2(56.0, 16.0),
-                    scale=Vector2(16.0, 16.0),
-                ),
-            )
-
-            self.world.add_component(
-                child,
-                Parent(entity),
-            )
-
-            self.world.add_component(
-                child,
-                QuadRenderable(
-                    color=(1.0, 1.0, 0.0, 1.0),
-                    z_index=10,
-                ),
-            )
-
     def _get_player_position(self):
         return self._get_player_transform().position
 

@@ -10,9 +10,9 @@ def get_world_transform(world, entity):
     if parent is None:
         return transform
 
-    parent_transform = world.get_component(
+    parent_transform = get_world_transform(
+        world,
         parent.entity,
-        Transform,
     )
 
     return Transform(
