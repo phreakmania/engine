@@ -2,11 +2,10 @@ import math
 import unittest
 from unittest.mock import Mock
 
-from engine.ecs.components.transform import Transform
 from engine.ecs.components.quad_renderable import QuadRenderable
+from engine.ecs.components.transform import Transform
 from engine.ecs.components.velocity import Velocity
 from engine.key import Key
-from engine.collision import intersects
 from engine.vector2 import Vector2
 from game.components import (
     BulletTag,

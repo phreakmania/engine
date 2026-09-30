@@ -1,10 +1,10 @@
 import glfw
 
-
-from .window import Window
-from .resource_manager import ResourceManager
-from .renderer import Renderer
 from .input import Input
+from .renderer import Renderer
+from .resource_manager import ResourceManager
+from .window import Window
+
 
 class Application:
     def __init__(self, game, width=1280, height=720, title="New Game"):

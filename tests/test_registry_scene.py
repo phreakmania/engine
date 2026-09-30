@@ -5,11 +5,9 @@ from pathlib import Path
 
 from engine.ecs.component_registry import ComponentRegistry
 from engine.ecs.components.player_spawn import PlayerSpawn
-from engine.ecs.components.quad_renderable import QuadRenderable
 from engine.ecs.components.transform import Transform
 from engine.ecs.components.velocity import Velocity
 from engine.scene_loader import SceneLoader
-from engine.vector2 import Vector2
 
 
 class ComponentRegistryTests(unittest.TestCase):

@@ -1,4 +1,5 @@
 import glfw
+
 from .key import Key
 
 KEY_MAP = {

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from engine.ecs.world import World
 
+
 @dataclass
 class CustomTag:
     pass

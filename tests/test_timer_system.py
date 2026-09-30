@@ -2,6 +2,7 @@ import unittest
 
 from engine.timer import Timer
 
+
 class TimerTests(unittest.TestCase):
     def test_timer_counts_down(self):
         timer = Timer(1.0)

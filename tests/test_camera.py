@@ -1,6 +1,8 @@
 import unittest
+
 from engine.camera import Camera2D
 from engine.vector2 import Vector2
+
 
 class CameraTests(unittest.TestCase):
     def test_world_to_screen(self):

@@ -4,11 +4,11 @@ from unittest.mock import Mock, call, patch
 
 from PIL import Image
 
+from engine import texture as texture_module
 from engine.camera import Camera2D
 from engine.ecs.components.transform import Transform
 from engine.renderer import Renderer
 from engine.texture import Texture
-from engine import texture as texture_module
 from engine.vector2 import Vector2
 
 

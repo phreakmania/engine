@@ -1,0 +1,36 @@
+{
+    "entities": [
+       {
+            "id": "parent",
+            "components": {
+                "Transform": {
+                    "position": [
+                        100.0,
+                        50.0
+                    ],
+                    "scale": [
+                        32.0,
+                        32.0
+                    ],
+                    "rotation": 0.0
+                }
+            }
+        },
+        {
+            "id": "parent",
+            "components": {
+                "Transform": {
+                    "position": [
+                        100.0,
+                        50.0
+                    ],
+                    "scale": [
+                        32.0,
+                        32.0
+                    ],
+                    "rotation": 0.0
+                }
+            }
+        }
+    ]
+}

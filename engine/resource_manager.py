@@ -1,5 +1,6 @@
 from .texture import Texture
 
+
 class ResourceManager:
     def __init__(self):
         self._textures: dict[str, Texture] = {}

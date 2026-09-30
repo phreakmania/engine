@@ -1,5 +1,5 @@
-from PIL import Image
 from OpenGL.GL import *
+from PIL import Image
 
 
 class Texture:

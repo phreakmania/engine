@@ -1,6 +1,6 @@
-from engine.ecs.transform_resolver import get_world_transform
-from engine.ecs.components.transform import Transform
 from engine.ecs.components.quad_renderable import QuadRenderable
+from engine.ecs.components.transform import Transform
+from engine.ecs.transform_resolver import get_world_transform
 
 
 def quad_render_system(world, renderer, resources):

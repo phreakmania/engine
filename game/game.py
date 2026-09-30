@@ -1,23 +1,30 @@
 
-from .components import PlayerTag, EnemyTag, BulletTag, WallTag, Damage, Health, Invulnerability
-from .systems import invulnerability_system, bullet_lifetime_system
-
 from engine.camera import Camera2D
-from engine.vector2 import Vector2
-from engine.key import Key
-from engine.texture import Texture
-from engine.timer import Timer
 from engine.collision import intersects
-from engine.scene_loader import SceneLoader
-from engine.ecs.hierarchy import destroy_entity_tree
 from engine.ecs.component_registry import ComponentRegistry
-from engine.ecs.components.parent import Parent
-from engine.ecs.components.transform import Transform
-from engine.ecs.components.velocity import Velocity
 from engine.ecs.components.player_spawn import PlayerSpawn
 from engine.ecs.components.quad_renderable import QuadRenderable
+from engine.ecs.components.transform import Transform
+from engine.ecs.components.velocity import Velocity
+from engine.ecs.hierarchy import destroy_entity_tree
 from engine.ecs.systems.movement import movement_system
 from engine.ecs.systems.quad_render import quad_render_system
+from engine.key import Key
+from engine.scene_loader import SceneLoader
+from engine.timer import Timer
+from engine.vector2 import Vector2
+
+from .components import (
+    BulletTag,
+    Damage,
+    EnemyTag,
+    Health,
+    Invulnerability,
+    PlayerTag,
+    WallTag,
+)
+from .systems import bullet_lifetime_system
+
 
 class Game:
     def __init__(self, width, height):
@@ -60,9 +67,6 @@ class Game:
         self.camera = Camera2D()
 
         self.enemy_spawn_timer = Timer(2.0, can_overflow=True)
-
-        wall_size = 32.0
-        half_wall = wall_size * 0.5
 
         self._spawn_player()
 
@@ -128,7 +132,7 @@ class Game:
             PlayerSpawn
         ))
 
-        player_spawn_entity, player_spawn_transform, player_spawn = results[0]
+        _, player_spawn_transform, _ = results[0]
               
         entity = self.world.create_entity()
         self.world.add_component(
@@ -208,13 +212,13 @@ class Game:
 
     def _get_player_transform(self):
         results = list(self.world.query(PlayerTag, Transform))
-        (entity, player_tag, player_transform) = (results[0])
+        (_, _, player_transform) = (results[0])
         return player_transform
 
     def _update_enemies(self):
         player_position = self._get_player_position()
 
-        for entity, enemy_tag, transform, velocity in self.world.query(
+        for _, _, transform, velocity in self.world.query(
             EnemyTag,
             Transform,
             Velocity,
@@ -278,7 +282,7 @@ class Game:
 
     def _check_game_over(self):
         results = list(self.world.query(PlayerTag, Health))
-        (entity, player_tag, player_health) = (results[0])
+        (_, _, player_health) = (results[0])
         
         if player_health.current <= 0:
             self.game_over = True

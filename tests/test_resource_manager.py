@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch
+
 from engine.resource_manager import ResourceManager
+
 
 class ResourceManagerTests(unittest.TestCase):
     def test_texture_is_cached(self):

@@ -1,10 +1,11 @@
 
 from ..vector2 import Vector2
+from .components.parent import Parent
 from .components.player_spawn import PlayerSpawn
+from .components.quad_renderable import QuadRenderable
 from .components.transform import Transform
 from .components.velocity import Velocity
-from .components.parent import Parent
-from .components.quad_renderable import QuadRenderable
+
 
 class ComponentRegistry:
     def __init__(self):
