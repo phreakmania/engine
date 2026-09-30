@@ -24,7 +24,8 @@ class ComponentRegistry:
             "QuadRenderable",
             lambda data: QuadRenderable(
                 color=tuple(data["color"]),
-                texture=data.get("texture")
+                texture=data.get("texture"),
+                z_index=data.get("z_index", 0)
             )
         )
 

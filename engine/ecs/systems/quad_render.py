@@ -3,9 +3,12 @@ from engine.ecs.components.quad_renderable import QuadRenderable
 
 
 def quad_render_system(world, renderer, resources):
-    for entity, transform, renderable in world.query(
-        Transform,
-        QuadRenderable,
+
+    entities = world.query(Transform, QuadRenderable)
+
+    for entity, transform, renderable in sorted(
+        entities,
+        key=lambda item: item[2].z_index,
     ):
         texture = None
 
