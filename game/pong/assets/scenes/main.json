@@ -3,8 +3,8 @@
         {
             "components": {
                 "Transform": {
-                    "position": [64.0,272.0],
-                    "scale": [16.0,128.0],
+                    "position": [64.0,336.0],
+                    "scale": [16.0,96.0],
                     "rotation": 0.0
                 },
                 "QuadRenderable": {
@@ -16,14 +16,27 @@
         {
             "components": {
                 "Transform": {
-                    "position": [720.0,272.0],
-                    "scale": [16.0,128.0],
+                    "position": [944.0,336.0],
+                    "scale": [16.0,96.0],
                     "rotation": 0.0
                 },
                 "QuadRenderable": {
                     "color": [0.0, 1.0, 0.0, 1.0]
                 },
                 "RightPlayer": {}
+            }
+        },
+        {
+            "components": {
+                "Transform": {
+                    "position": [504.0, 376.0],
+                    "scale": [16.0,16.0],
+                    "rotation": 0.0
+                },
+                "QuadRenderable": {
+                    "color": [1.0, 1.0, 1.0, 1.0]
+                },
+                "BallSpawn": {}
             }
         }
     ]
