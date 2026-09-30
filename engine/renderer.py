@@ -16,6 +16,9 @@ class Renderer:
         #version 330 core
 
         layout (location = 0) in vec2 position;
+        layout (location = 1) in vec2 uv;
+
+        out vec2 texture_uv;
 
         uniform vec2 offset;
         uniform vec2 size;
@@ -39,28 +42,54 @@ class Renderer:
                 0.0,
                 1.0
             );
+
+            texture_uv = uv;
         }
         """
 
         fragment_shader_source = """
         #version 330 core
 
+        in vec2 texture_uv;
+
         out vec4 fragment_color;
+
         uniform vec4 color;
+        uniform sampler2D texture_sampler;
+        uniform bool use_texture;
 
         void main()
         {
-            fragment_color = color;
+            if (use_texture)
+            {
+                fragment_color = texture(
+                    texture_sampler,
+                    texture_uv
+                );
+            }
+            else
+            {
+                fragment_color = color;
+            }
         }
         """
 
+
         glClearColor(0.1,0.15,0.2,1.0)
 
+
+        glEnable(GL_BLEND)
+
+        glBlendFunc(
+            GL_SRC_ALPHA,
+            GL_ONE_MINUS_SRC_ALPHA,
+        )
+        
         vertices = np.array([
-            -0.5, -0.5,
-            0.5, -0.5,
-            0.5,  0.5,
-            -0.5,  0.5,
+            -0.5, -0.5,  0.0, 0.0,
+            0.5, -0.5,  1.0, 0.0,
+            0.5,  0.5,  1.0, 1.0,
+            -0.5,  0.5,  0.0, 1.0,
         ], dtype=np.float32)
 
         indices = np.array([
@@ -96,11 +125,20 @@ class Renderer:
             2,
             GL_FLOAT,
             GL_FALSE,
-            2 * vertices.itemsize,
+            4 * vertices.itemsize,
             ctypes.c_void_p(0),
         )
-
         glEnableVertexAttribArray(0)
+
+        glVertexAttribPointer(
+            1,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            4 * vertices.itemsize,
+            ctypes.c_void_p(2 * vertices.itemsize),
+        )
+        glEnableVertexAttribArray(1)
 
         self.shader = compileProgram(
             compileShader(vertex_shader_source, GL_VERTEX_SHADER),
@@ -132,6 +170,16 @@ class Renderer:
             "color",
         )
 
+        self.use_texture_location = glGetUniformLocation(
+            self.shader,
+            "use_texture",
+        )
+
+        self.texture_sampler_location = glGetUniformLocation(
+            self.shader,
+            "texture_sampler",
+        )
+
         projection = np.array([
             [2.0 / virtual_width,    0.0,                   0.0, -1.0],
             [0.0,                   -2.0 / virtual_height,  0.0,  1.0],
@@ -141,6 +189,11 @@ class Renderer:
 
         glUseProgram(self.shader)
 
+        glUniform1i(
+            self.texture_sampler_location,
+            0,
+        )
+        
         glUniformMatrix4fv(
             self.projection_location,
             1,
@@ -176,7 +229,7 @@ class Renderer:
     def begin_frame(self):
         glClear(GL_COLOR_BUFFER_BIT)
 
-    def render(self, transform, color):
+    def render(self, transform, color, texture=None):
         glUseProgram(self.shader)
         glBindVertexArray(self.vao)
 
@@ -208,6 +261,23 @@ class Renderer:
             color[2],
             color[3]
         )
+
+        if texture is not None:
+            glUniform1i(
+                self.use_texture_location,
+                1,
+            )
+
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(
+                GL_TEXTURE_2D,
+                texture.id,
+            )
+        else:
+            glUniform1i(
+                self.use_texture_location,
+                0,
+            )
 
         glDrawElements(
             GL_TRIANGLES,

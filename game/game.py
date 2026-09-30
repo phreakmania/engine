@@ -5,6 +5,7 @@ from .systems import invulnerability_system, bullet_lifetime_system
 from engine.camera import Camera2D
 from engine.vector2 import Vector2
 from engine.key import Key
+from engine.texture import Texture
 from engine.collision import intersects
 from engine.ecs.world import World
 from engine.ecs.systems.movement import movement_system
@@ -18,7 +19,7 @@ class Game:
         self.game_over = False
         self.width = width
         self.height = height
-
+        
         self.world_width = 3000.0
         self.world_height = 2000.0
 
@@ -291,6 +292,9 @@ class Game:
             if intersects(transform, wall_transform):
                 transform.position.y -= movement.y
                 break
+
+    def set_test_texture(self, texture):
+        self.test_texture = texture
 
     def _spawn_bullets(self, input):
         if input.was_key_pressed(Key.SPACE):
