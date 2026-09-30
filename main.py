@@ -1,17 +1,17 @@
 from engine.application import Application
-from game.game import Game
+from game.pong.game import Game
 
 
 def main():
-    GAME_WIDTH = 1280
-    GAME_HEIGHT = 720
+    GAME_WIDTH = 800
+    GAME_HEIGHT = 600
     game = Game(GAME_WIDTH, GAME_HEIGHT)
 
     app = Application(
         game,
         width=GAME_WIDTH,
         height=GAME_HEIGHT,
-        title="New Engine")
+        title="Pong")
     app.run()
 
 
