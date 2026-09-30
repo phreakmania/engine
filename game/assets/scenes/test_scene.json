@@ -3,10 +3,85 @@
         {
             "components": {
                 "Transform": {
+                    "position": [640.0,820.0],
+                    "scale": [32.0,32.0],
+                    "rotation": 0.0
+                },
+                "PlayerSpawn": {}
+            }
+        },
+        {
+            "components": {
+                "Transform": {
                     "position": [400.0, 300.0],
                     "scale": [64.0, 64.0],
                     "rotation": 0.0
+                },
+                "QuadRenderable": {
+                    "color": [1.0, 0.0, 0.0, 1.0]
+                },
+                "EnemyTag": {},
+                "Health": {
+                    "current": 3
+                },
+                "Damage": {
+                    "value": 1
+                },
+                "Velocity": {
+                    "value": [0.0,0.0]
                 }
+            }
+        },
+        {
+            "components": {
+                "Transform": {
+                    "position": [1000.0, 16.0],
+                    "scale": [2000.0, 32.0],
+                    "rotation": 0.0
+                },
+                "QuadRenderable": {
+                    "color": [0.2, 0.2, 0.2, 1.0]
+                },
+                "WallTag": {}
+            }
+        },
+        {
+            "components": {
+                "Transform": {
+                    "position": [1000.0, 984.0],
+                    "scale": [2000.0, 32.0],
+                    "rotation": 0.0
+                },
+                "QuadRenderable": {
+                    "color": [0.2, 0.2, 0.2, 1.0]
+                },
+                "WallTag": {}
+            }
+        },
+        {
+            "components": {
+                "Transform": {
+                    "position": [16.0, 500.0],
+                    "scale": [32.0, 1000.0],
+                    "rotation": 0.0
+                },
+                "QuadRenderable": {
+                    "color": [0.2, 0.2, 0.2, 1.0]
+                },
+                "WallTag": {}
+            }
+        },
+        {
+            "components": {
+                "Transform": {
+                    "position": [1984.0, 500.0],
+                    "scale": [32.0, 1000.0],
+                    "rotation": 0.0
+                },
+                "QuadRenderable": {
+                    "color": [0.2, 0.2, 0.2, 1.0]
+                },
+                "WallTag": {}
             }
         }
     ]
