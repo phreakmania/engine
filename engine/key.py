@@ -6,4 +6,6 @@ class Key(Enum):
     A = auto()
     S = auto()
     D = auto()
+    UP = auto()
+    DOWN = auto()
     SPACE = auto()

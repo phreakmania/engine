@@ -2,40 +2,23 @@
     "entities": [
         {
             "components": {
-                "Transform": {
-                    "position": [64.0, 384.0],
-                    "scale": [16.0,96.0],
-                    "rotation": 0.0
-                },
-                "QuadRenderable": {
-                    "color": [1.0, 0.0, 0.0, 1.0]
-                },
+                "Transform": {"position": [32.0, 300.0], "scale": [16.0, 96.0], "rotation": 0.0},
+                "QuadRenderable": {"color": [0.2, 0.85, 1.0, 1.0], "z_index": 1},
                 "LeftPlayer": {}
             }
         },
         {
             "components": {
-                "Transform": {
-                    "position": [960.0, 384.0],
-                    "scale": [16.0,96.0],
-                    "rotation": 0.0
-                },
-                "QuadRenderable": {
-                    "color": [0.0, 1.0, 0.0, 1.0]
-                },
+                "Transform": {"position": [768.0, 300.0], "scale": [16.0, 96.0], "rotation": 0.0},
+                "QuadRenderable": {"color": [1.0, 0.45, 0.35, 1.0], "z_index": 1},
                 "RightPlayer": {}
             }
         },
         {
             "components": {
-                "Transform": {
-                    "position": [512.0, 384.0],
-                    "scale": [16.0,16.0],
-                    "rotation": 0.0
-                },
-                "QuadRenderable": {
-                    "color": [1.0, 1.0, 1.0, 1.0]
-                },
+                "Transform": {"position": [400.0, 300.0], "scale": [16.0, 16.0], "rotation": 0.0},
+                "Velocity": {"value": [0.0, 0.0]},
+                "QuadRenderable": {"color": [1.0, 1.0, 1.0, 1.0], "z_index": 1},
                 "BallSpawn": {}
             }
         }
