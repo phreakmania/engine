@@ -17,7 +17,22 @@ class Vector2:
         if length == 0:
             return Vector2()
 
+        return self / length;
+
+    def __add__(self, other: Vector2):
+        return Vector2(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other: Vector2):
+        return Vector2(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, scalar):
+        return Vector2(self.x * scalar, self.y * scalar)
+
+    def __truediv__(self, scalar):
+        if scalar == 0:
+            raise ZeroDivisionError("Cannot divide Vector2 by zero")
+
         return Vector2(
-            self.x / length,
-            self.y / length,
+            self.x / scalar,
+            self.y / scalar,
         )
