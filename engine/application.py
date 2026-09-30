@@ -12,8 +12,8 @@ class Application:
         self.input = Input(self.window)
         self.renderer = Renderer(
             game.camera,
-            virtual_width=1024,
-            virtual_height=768,
+            virtual_width=game.world_width,
+            virtual_height=game.world_height,
         )
         self.resources = ResourceManager()
         self.game = game
