@@ -23,7 +23,8 @@ class ComponentRegistry:
         self.register(
             "QuadRenderable",
             lambda data: QuadRenderable(
-                color=tuple(data["color"])
+                color=tuple(data["color"]),
+                texture=data.get("texture")
             )
         )
 

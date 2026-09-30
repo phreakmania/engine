@@ -18,7 +18,8 @@
                     "rotation": 0.0
                 },
                 "QuadRenderable": {
-                    "color": [1.0, 0.0, 0.0, 1.0]
+                    "color": [1.0, 0.0, 0.0, 1.0],
+                    "texture": "game/assets/tile_0000.png"
                 },
                 "EnemyTag": {},
                 "Health": {

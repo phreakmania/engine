@@ -365,8 +365,9 @@ class Game:
             ),
         )
 
-    def render(self, renderer):
+    def render(self, renderer, resources):
         quad_render_system(
             self.world,
             renderer,
+            resources,
         )
