@@ -7,3 +7,7 @@ class LeftPlayerTag:
 @dataclass
 class RightPlayerTag:
     pass
+
+@dataclass
+class BallSpawnTag:
+    pass
