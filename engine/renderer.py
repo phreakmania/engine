@@ -1,10 +1,11 @@
 import ctypes
+
 import numpy as np
+from OpenGL.GL import *
+from OpenGL.GL.shaders import compileProgram, compileShader
 
 from engine.camera import Camera2D
 
-from OpenGL.GL import *
-from OpenGL.GL.shaders import compileProgram, compileShader
 
 class Renderer:
     def __init__(self, camera: Camera2D, virtual_width=1280, virtual_height=720):

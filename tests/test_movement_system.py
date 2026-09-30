@@ -1,10 +1,10 @@
 import unittest
 
-from engine.ecs.world import World
 from engine.ecs.components.transform import Transform
-from engine.vector2 import Vector2
 from engine.ecs.components.velocity import Velocity
 from engine.ecs.systems.movement import movement_system
+from engine.ecs.world import World
+from engine.vector2 import Vector2
 
 
 class MovementSystemTests(unittest.TestCase):

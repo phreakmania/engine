@@ -2,8 +2,8 @@ import unittest
 
 from engine.ecs.components.transform import Transform
 from engine.ecs.world import World
-from engine.vector2 import Vector2
 from engine.timer import Timer
+from engine.vector2 import Vector2
 from game.components import BulletTag, Invulnerability
 from game.systems import bullet_lifetime_system
 

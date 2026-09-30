@@ -1,9 +1,9 @@
 import unittest
 from dataclasses import dataclass
 
+from engine.ecs.components.parent import Parent
 from engine.ecs.hierarchy import destroy_entity_tree
 from engine.ecs.world import World
-from engine.ecs.components.parent import Parent
 
 
 @dataclass

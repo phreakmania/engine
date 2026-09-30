@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from engine.texture import Texture
+
 
 @dataclass
 class QuadRenderable:

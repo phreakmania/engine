@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+
 from engine.timer import Timer
+
 
 @dataclass
 class BulletTag:

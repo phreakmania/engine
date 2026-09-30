@@ -1,7 +1,6 @@
 import json
 
 from engine.scene import Scene
-from engine.ecs.components.parent import Parent
 
 
 class SceneLoader:

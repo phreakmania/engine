@@ -1,6 +1,7 @@
+from engine.ecs.components.transform import Transform
+
 from .components import BulletTag, Invulnerability
 
-from engine.ecs.components.transform import Transform
 
 def invulnerability_system(world, dt):
     for entity, invulnerability in world.query(Invulnerability):

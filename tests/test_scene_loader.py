@@ -1,11 +1,12 @@
 import unittest
 
-from engine.scene import Scene
-from engine.scene_loader import SceneLoader
 from engine.ecs.component_registry import ComponentRegistry
 from engine.ecs.components.parent import Parent
-from engine.ecs.components.transform import Transform
 from engine.ecs.components.quad_renderable import QuadRenderable
+from engine.ecs.components.transform import Transform
+from engine.scene import Scene
+from engine.scene_loader import SceneLoader
+
 
 class SceneLoaderTests(unittest.TestCase):
     def test_loads_scene_from_file(self):
@@ -78,6 +79,20 @@ class SceneLoaderTests(unittest.TestCase):
 
         self.assertEqual(parent_transform.position.x, 100.0)
         self.assertEqual(parent_transform.position.y, 50.0)
+
+    def test_loads_duplicate_scene_id(self):
+        registry = ComponentRegistry()
+        with self.assertRaises(ValueError):
+            scene = SceneLoader(registry).load(
+                "tests/assets/test_duplicate.json"
+            )
+
+    def test_loads_invalid_scene_id(self):
+        registry = ComponentRegistry()
+        with self.assertRaises(ValueError):
+            scene = SceneLoader(registry).load(
+                "tests/assets/test_duplicate.json"
+            )
 
 if __name__ == "__main__":
     unittest.main()
