@@ -3,7 +3,7 @@
         {
             "components": {
                 "Transform": {
-                    "position": [64.0,336.0],
+                    "position": [64.0, 384.0],
                     "scale": [16.0,96.0],
                     "rotation": 0.0
                 },
@@ -16,7 +16,7 @@
         {
             "components": {
                 "Transform": {
-                    "position": [944.0,336.0],
+                    "position": [960.0, 384.0],
                     "scale": [16.0,96.0],
                     "rotation": 0.0
                 },
@@ -29,7 +29,7 @@
         {
             "components": {
                 "Transform": {
-                    "position": [504.0, 376.0],
+                    "position": [512.0, 384.0],
                     "scale": [16.0,16.0],
                     "rotation": 0.0
                 },
